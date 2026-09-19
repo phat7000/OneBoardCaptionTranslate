@@ -1,0 +1,56 @@
+﻿<Page
+    x:Class="LiveCaptionsTranslator.InfoPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:LiveCaptionsTranslator"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+    Title="InfoPage"
+    JournalEntry.KeepAlive="False"
+    mc:Ignorable="d">
+    <Grid Margin="10">
+        <StackPanel>
+            <TextBlock FontSize="20" FontWeight="SemiBold" Text="OneBoard Caption Translate" />
+            <TextBlock Margin="0,3,0,0" Text="Lightweight real-time translation for Windows." TextWrapping="Wrap" />
+            <TextBlock Margin="0,6,0,0" TextWrapping="Wrap">
+                <Run Text="OneBoard Caption Translate is built on Windows Live Captions." />
+            </TextBlock>
+            <Separator Margin="0,5,0,5" />
+            <TextBlock Margin="0,0,0,3">
+                <Run FontWeight="SemiBold" Text="Product website:" />
+                <Hyperlink NavigateUri="https://oneboard.io.vn/oneboard-caption-translate/" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://oneboard.io.vn/oneboard-caption-translate/" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="0,0,0,3">
+                <Run Text="Based on LiveCaptions-Translator by SakiRinn and contributors." />
+            </TextBlock>
+            <TextBlock Margin="0,0,0,3">
+                <Run FontWeight="SemiBold" Text="Upstream:" />
+                <Hyperlink NavigateUri="https://github.com/SakiRinn/LiveCaptions-Translator" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://github.com/SakiRinn/LiveCaptions-Translator" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="0,0,0,3">
+                <Run FontWeight="SemiBold" Text="Upstream authors:" />
+                <Hyperlink NavigateUri="https://github.com/SakiRinn" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="SakiRinn" />
+                </Hyperlink>
+                <Run Text=" and contributors, including " />
+                <Hyperlink NavigateUri="https://github.com/A-nony-mous" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="@A-nony-mous" />
+                </Hyperlink>
+            </TextBlock>
+            <TextBlock Margin="0,0,0,3">
+                <Run FontWeight="SemiBold" Text="License:" />
+                <Run Text="Apache License 2.0" />
+            </TextBlock>
+            <TextBlock Margin="0,0,0,3">
+                <Run FontWeight="SemiBold" Text="Version:" />
+                <Run x:Name="Version" Text="1.1.1.1" />
+            </TextBlock>
+            <TextBlock FontStyle="Italic" Text="This modified product is not an official upstream release and does not imply upstream endorsement." TextWrapping="Wrap" />
+        </StackPanel>
+    </Grid>
+</Page>

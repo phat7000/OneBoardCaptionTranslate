@@ -1,0 +1,88 @@
+<div align="center">
+
+<img src="src/LiveCaptions-Translator.ico" width="128" height="128" alt="OneBoard Caption Translate icon"/>
+
+# OneBoard Caption Translate
+
+### *Lightweight real-time translation for Windows.*
+
+[![Windows 11](https://img.shields.io/badge/platform-Windows%2011-1E9BFA?logo=windows11)](https://www.microsoft.com/windows/windows-11)
+
+**English** | [中文](README_zh-CN.md)
+
+</div>
+
+## Overview
+
+OneBoard Caption Translate connects Windows Live Captions to your selected translation provider and displays the result in the main window or a configurable overlay.
+
+```text
+Windows Live Captions -> OneBoard Caption Translate -> translated overlay
+```
+
+- Product page: https://oneboard.io.vn/oneboard-caption-translate/
+- Official OneBoard source: https://github.com/phat7000/OneBoardCaptionTranslate
+- Upstream project: https://github.com/SakiRinn/LiveCaptions-Translator
+
+## Features
+
+- Windows Live Captions capture.
+- Multiple retained translation providers, including Google for quick testing and configurable LLM or traditional services.
+- Two-pane overlay with Original on top and Translation on the bottom by default.
+- Switch Order, Original Only, and Translation Only modes.
+- Font size and bold controls, text color, outline/stroke, background color, and opacity.
+- Movable and resizable overlay with click-through mode.
+- Translation context options.
+- Translation history and CSV export.
+- Light and dark theme support.
+- Per-user settings and history stored outside the application folder.
+
+Final v1.0 screenshots will be added after product-owner QA. Older screenshots that predate the final branding and two-pane layout are intentionally not shown here.
+
+## System requirements
+
+- Windows 11 22H2 or later.
+- Windows Live Captions support and the required source-language speech pack.
+- Windows x64 for the v1.0 packages.
+
+The portable package is self-contained. No separate .NET installation is required.
+
+## Quick Start
+
+1. Download the Portable ZIP or Installer.
+2. If using the ZIP, extract it completely before running the application.
+3. Press **Win + Ctrl + L** and complete Windows Live Captions setup if prompted.
+4. Configure the Windows Live Captions source language.
+5. In Windows Live Captions, select **Position** > **Overlaid on screen**.
+6. Launch `OneBoardCaptionTranslate.exe`.
+7. Select a translation provider. Google can be used for a quick test.
+8. Select a target language, for example `vi-VN`.
+9. Open **Overlay** if desired.
+
+Windows Live Captions can include microphone audio through its own settings. Translation providers may have their own network, account, API-key, or usage requirements.
+
+## User data
+
+Settings and translation history are stored at:
+
+```text
+%LOCALAPPDATA%\OneBoard\OneBoard Caption Translate\
+```
+
+Removing the portable folder or uninstalling the application does not automatically remove settings or history stored in LocalAppData.
+
+## Updates and release authenticity
+
+Automatic updates are disabled in v1.0. Obtain releases only from the official OneBoard source repository or product page and verify the published SHA256 values.
+
+The v1.0 Windows binaries are unsigned and may trigger Windows SmartScreen warnings.
+
+## Source, license, and upstream attribution
+
+The official OneBoard source repository is:
+
+https://github.com/phat7000/OneBoardCaptionTranslate
+
+OneBoard Caption Translate is based on [SakiRinn/LiveCaptions-Translator](https://github.com/SakiRinn/LiveCaptions-Translator), licensed under the Apache License 2.0. It contains modifications and is not an official upstream release. The upstream authors do not endorse this modified product.
+
+See [LICENSE](LICENSE), [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
