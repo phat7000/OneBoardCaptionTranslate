@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:LiveCaptionsTranslator"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="API Setting"
+    Title="Provider Settings"
     Width="950"
     Height="500"
     ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
@@ -28,7 +28,7 @@
             Height="27"
             ShowMaximize="False">
             <ui:TitleBar.Header>
-                <ui:TextBlock Padding="15,0,0,0" VerticalAlignment="Center">API Setting</ui:TextBlock>
+                <ui:TextBlock Padding="15,0,0,0" VerticalAlignment="Center">Provider Settings</ui:TextBlock>
             </ui:TitleBar.Header>
         </ui:TitleBar>
 
@@ -181,6 +181,72 @@
                                 <ui:TextBlock VerticalAlignment="Center" Text="LibreTranslate" />
                             </StackPanel>
                         </ui:Button>
+
+                        <Separator Margin="15,10,10,5" />
+                        <ui:TextBlock Margin="15,3,5,3" FontWeight="SemiBold" Text="Cloud speech" />
+                        <ui:Button
+                            x:Name="AzureSpeechButton"
+                            Margin="10,5,5,0"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="Azure Speech"
+                            Tag="AzureSpeech" />
+                        <ui:Button
+                            x:Name="GoogleSpeechButton"
+                            Margin="10,5,5,0"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="Google Speech"
+                            Tag="GoogleSpeech" />
+
+                        <Separator Margin="15,10,10,5" />
+                        <ui:TextBlock Margin="15,3,5,3" FontWeight="SemiBold" Text="Cloud translation" />
+                        <ui:Button
+                            x:Name="MicrosoftTranslatorButton"
+                            Margin="10,5,5,0"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="Microsoft Translator"
+                            Tag="MicrosoftTranslator" />
+                        <ui:Button
+                            x:Name="GoogleCloudTranslationButton"
+                            Margin="10,5,5,0"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="Google Cloud Translation"
+                            Tag="GoogleCloudTranslation" />
+                        <ui:Button
+                            x:Name="TranslatePlusButton"
+                            Margin="10,5,5,0"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="TranslatePlus"
+                            Tag="TranslatePlus" />
+                        <ui:Button
+                            x:Name="LangblyButton"
+                            Margin="10,5,5,10"
+                            Padding="10"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Background="Transparent"
+                            Click="NavigationButton_Click"
+                            Content="Langbly"
+                            Tag="Langbly" />
                     </StackPanel>
                 </ScrollViewer>
             </Border>
@@ -197,7 +263,7 @@
                             Margin="0,0,0,10"
                             FontSize="28"
                             FontWeight="Heavy"
-                            Text="API Setting" />
+                            Text="Provider Settings" />
 
                         <StackPanel x:Name="AllSettings" Margin="5">
                             <StackPanel x:Name="PromptSection" Margin="20">
@@ -1272,6 +1338,96 @@
                                                     Text="{Binding [LibreTranslate].ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                             </StackPanel>
                                         </Grid>
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="AzureSpeechSection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="Azure Speech" />
+                                <ui:Card Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Margin="0,0,0,12" Text="Real-time Speech-to-Text. Credentials stay in your local settings and are never logged." TextWrapping="Wrap" />
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="5">
+                                                <TextBlock Margin="2,0,0,5" Text="Speech key" />
+                                                <ui:PasswordBox Height="31" Password="{Binding AzureSpeech.ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RevealButtonEnabled="True" />
+                                            </StackPanel>
+                                            <StackPanel Margin="5">
+                                                <TextBlock Margin="2,0,0,5" Text="Region" />
+                                                <ui:TextBox Height="31" Text="{Binding AzureSpeech.Region, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="GoogleSpeechSection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="Google Speech" />
+                                <ui:Card Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Margin="0,0,0,12" Text="Choose a user-managed Google service-account JSON path. The credential file is referenced only and is never copied into the app or release package." TextWrapping="Wrap" />
+                                        <TextBlock Margin="2,0,0,5" Text="Service-account JSON path" />
+                                        <ui:TextBox Height="31" Text="{Binding GoogleSpeech.CredentialsFilePath, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="MicrosoftTranslatorSection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="Microsoft Translator" />
+                                <ui:Card Padding="15">
+                                    <UniformGrid Columns="3">
+                                        <StackPanel Margin="5">
+                                            <TextBlock Margin="2,0,0,5" Text="API key" />
+                                            <ui:PasswordBox Height="31" Password="{Binding [MicrosoftTranslator].ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RevealButtonEnabled="True" />
+                                        </StackPanel>
+                                        <StackPanel Margin="5">
+                                            <TextBlock Margin="2,0,0,5" Text="Region (when required)" />
+                                            <ui:TextBox Height="31" Text="{Binding [MicrosoftTranslator].Region, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                        <StackPanel Margin="5">
+                                            <TextBlock Margin="2,0,0,5" Text="Endpoint" />
+                                            <ui:TextBox Height="31" Text="{Binding [MicrosoftTranslator].Endpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                        </StackPanel>
+                                    </UniformGrid>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="GoogleCloudTranslationSection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="Google Cloud Translation" />
+                                <ui:Card Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Margin="0,0,0,12" Text="Official Cloud Translation Basic (v2) API-key mode. This is separate from the existing unofficial Google provider." TextWrapping="Wrap" />
+                                        <TextBlock Margin="2,0,0,5" Text="API key" />
+                                        <ui:PasswordBox Width="440" HorizontalAlignment="Left" Height="31" Password="{Binding [GoogleCloudTranslation].ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RevealButtonEnabled="True" />
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="TranslatePlusSection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="TranslatePlus" />
+                                <ui:Card Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Margin="2,0,0,5" Text="API key" />
+                                        <ui:PasswordBox Width="440" HorizontalAlignment="Left" Height="31" Password="{Binding [TranslatePlus].ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RevealButtonEnabled="True" />
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+
+                            <StackPanel x:Name="LangblySection" Margin="20">
+                                <ui:TextBlock Margin="10" FontSize="20" FontWeight="Medium" Text="Langbly" />
+                                <ui:Card Padding="15">
+                                    <StackPanel>
+                                        <TextBlock Margin="0,0,0,12" Text="Use the global endpoint or https://eu.langbly.com for EU data residency." TextWrapping="Wrap" />
+                                        <UniformGrid Columns="2">
+                                            <StackPanel Margin="5">
+                                                <TextBlock Margin="2,0,0,5" Text="API key" />
+                                                <ui:PasswordBox Height="31" Password="{Binding [Langbly].ApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" RevealButtonEnabled="True" />
+                                            </StackPanel>
+                                            <StackPanel Margin="5">
+                                                <TextBlock Margin="2,0,0,5" Text="Endpoint" />
+                                                <ui:TextBox Height="31" Text="{Binding [Langbly].Endpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                                            </StackPanel>
+                                        </UniformGrid>
                                     </StackPanel>
                                 </ui:Card>
                             </StackPanel>

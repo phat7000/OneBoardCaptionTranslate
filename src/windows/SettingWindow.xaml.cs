@@ -46,6 +46,8 @@ namespace LiveCaptionsTranslator
                 sectionReferences[apiName] = FindName($"{apiName}Section") as StackPanel;
                 SwitchConfig(apiName, Translator.Setting.ConfigIndices[apiName]);
             }
+            sectionReferences["AzureSpeech"] = AzureSpeechSection;
+            sectionReferences["GoogleSpeech"] = GoogleSpeechSection;
         }
 
         private void NewButton_Click(object sender, RoutedEventArgs e)
