@@ -47,7 +47,11 @@ namespace LiveCaptionsTranslator
             InitializeComponent();
             DataContext = Translator.Caption;
 
-            Loaded += (s, e) => Translator.Caption.PropertyChanged += TranslatedChanged;
+            Loaded += (s, e) =>
+            {
+                Translator.Caption.PropertyChanged += TranslatedChanged;
+                ScrollCaptionsToEnd();
+            };
             Unloaded += (s, e) => Translator.Caption.PropertyChanged -= TranslatedChanged;
 
             OriginalCaption.FontWeight = Translator.Setting.OverlayWindow.FontBold >= Utils.FontBold.SubtitleOnly ?
@@ -140,9 +144,17 @@ namespace LiveCaptionsTranslator
             RightThumb_OnDragDelta(sender, e);
         }
 
-        private void TranslatedChanged(object sender, PropertyChangedEventArgs e)
+        private void TranslatedChanged(object? sender, PropertyChangedEventArgs e)
         {
             ApplyFontSize();
+            if (e.PropertyName is "LiveOriginalText" or "LiveTranslatedText")
+                Dispatcher.BeginInvoke(ScrollCaptionsToEnd, DispatcherPriority.Background);
+        }
+
+        private void ScrollCaptionsToEnd()
+        {
+            OriginalCaptionScrollViewer.ScrollToEnd();
+            TranslatedCaptionScrollViewer.ScrollToEnd();
         }
 
         private void Window_MouseEnter(object sender, MouseEventArgs e)
@@ -258,6 +270,8 @@ namespace LiveCaptionsTranslator
         {
             var button = sender as Button;
             var symbolIcon = button?.Icon as SymbolIcon;
+            if (symbolIcon == null)
+                return;
 
             if (onlyMode == CaptionVisible.SubtitleOnly)
             {

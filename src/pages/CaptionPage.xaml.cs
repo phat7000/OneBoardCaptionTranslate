@@ -1,6 +1,7 @@
-﻿using System.Windows;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 using LiveCaptionsTranslator.Utils;
 
@@ -8,10 +9,11 @@ namespace LiveCaptionsTranslator
 {
     public partial class CaptionPage : Page
     {
-        public const int CARD_HEIGHT = 110;
+        private static CaptionPage? instance;
+        private bool originalAutoFollow = true;
+        private bool translatedAutoFollow = true;
 
-        private static CaptionPage instance;
-        public static CaptionPage Instance => instance;
+        public static CaptionPage? Instance => instance;
 
         public CaptionPage()
         {
@@ -19,14 +21,24 @@ namespace LiveCaptionsTranslator
             DataContext = Translator.Caption;
             instance = this;
 
-            Loaded += (s, e) =>
+            if (Translator.Caption != null)
+            {
+                Translator.Caption.OriginalTranscript.Changed += OriginalTranscript_Changed;
+                Translator.Caption.TranslatedTranscript.Changed += TranslatedTranscript_Changed;
+            }
+
+            Loaded += (_, _) =>
             {
                 AutoHeight();
-                (App.Current.MainWindow as MainWindow).CaptionLogButton.Visibility = Visibility.Visible;
+                if (Application.Current?.MainWindow is MainWindow window)
+                    window.CaptionLogButton.Visibility = Visibility.Visible;
+                FollowOriginal();
+                FollowTranslated();
             };
-            Unloaded += (s, e) =>
+            Unloaded += (_, _) =>
             {
-                (App.Current.MainWindow as MainWindow).CaptionLogButton.Visibility = Visibility.Collapsed;
+                if (Application.Current?.MainWindow is MainWindow window)
+                    window.CaptionLogButton.Visibility = Visibility.Collapsed;
             };
 
             CollapseTranslatedCaption(Translator.Setting.MainWindow.CaptionLogEnabled);
@@ -35,25 +47,24 @@ namespace LiveCaptionsTranslator
 
         private async void TextBlock_MouseLeftButtonDown(object sender, RoutedEventArgs e)
         {
-            if (sender is TextBlock textBlock)
+            if (sender is not TextBlock textBlock)
+                return;
+            try
             {
-                try
-                {
-                    Clipboard.SetText(textBlock.Text);
-                    SnackbarHost.Show("Copied.", textBlock.Text, SnackbarType.Info, 100);
-                }
-                catch
-                {
-                    SnackbarHost.Show("Copy Failed.", string.Empty, SnackbarType.Error, 100);
-                }
-                await Task.Delay(500);
+                Clipboard.SetText(textBlock.Text);
+                SnackbarHost.Show("Copied.", textBlock.Text, SnackbarType.Info, 100);
             }
+            catch
+            {
+                SnackbarHost.Show("Copy failed.", string.Empty, SnackbarType.Error, 100);
+            }
+            await Task.Delay(500);
         }
 
         private void ApplyFontSizes()
         {
-            OriginalCaption.FontSize = Translator.Setting.MainWindow.OriginalFontSize;
-            TranslatedCaption.FontSize = Translator.Setting.MainWindow.TranslatedFontSize;
+            OriginalTranscriptItems.FontSize = Translator.Setting.MainWindow.OriginalFontSize;
+            TranslatedTranscriptItems.FontSize = Translator.Setting.MainWindow.TranslatedFontSize;
         }
 
         private void OriginalCard_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
@@ -82,32 +93,53 @@ namespace LiveCaptionsTranslator
             return Math.Clamp(next, StyleConsts.MIN_FONT_SIZE, StyleConsts.MAX_FONT_SIZE);
         }
 
-        public void CollapseTranslatedCaption(bool isCollapsed)
+        public void CollapseTranslatedCaption(bool showLogCards)
         {
-            var converter = new GridLengthConverter();
-
-            if (isCollapsed)
-            {
-                TranslatedCaption_Row.Height = (GridLength)converter.ConvertFromString("Auto");
-                LogCards.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                TranslatedCaption_Row.Height = (GridLength)converter.ConvertFromString("*");
-                LogCards.Visibility = Visibility.Collapsed;
-            }
+            LogCards.Visibility = showLogCards ? Visibility.Visible : Visibility.Collapsed;
+            CaptionLogCard_Row.Height = showLogCards ? GridLength.Auto : new GridLength(0);
         }
 
         public void AutoHeight()
         {
-            if (Translator.Setting.MainWindow.CaptionLogEnabled)
-                (App.Current.MainWindow as MainWindow).AutoHeightAdjust(
-                    minHeight: CARD_HEIGHT * (Translator.Setting.DisplaySentences + 1),
-                    maxHeight: CARD_HEIGHT * (Translator.Setting.DisplaySentences + 1));
-            else
-                (App.Current.MainWindow as MainWindow).AutoHeightAdjust(
-                    minHeight: (int)App.Current.MainWindow.MinHeight,
-                    maxHeight: (int)App.Current.MainWindow.MinHeight);
+            if (Application.Current?.MainWindow is MainWindow window)
+                window.AutoHeightAdjust(minHeight: (int)window.MinHeight);
+        }
+
+        private void OriginalTranscript_Changed(object? sender, EventArgs e)
+        {
+            if (originalAutoFollow)
+                Dispatcher.BeginInvoke(FollowOriginal, DispatcherPriority.Background);
+        }
+
+        private void TranslatedTranscript_Changed(object? sender, EventArgs e)
+        {
+            if (translatedAutoFollow)
+                Dispatcher.BeginInvoke(FollowTranslated, DispatcherPriority.Background);
+        }
+
+        private void OriginalScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e) =>
+            originalAutoFollow = UpdateAutoFollow(OriginalScrollViewer, e, originalAutoFollow);
+
+        private void TranslatedScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e) =>
+            translatedAutoFollow = UpdateAutoFollow(TranslatedScrollViewer, e, translatedAutoFollow);
+
+        private static bool UpdateAutoFollow(ScrollViewer viewer, ScrollChangedEventArgs e, bool current)
+        {
+            if (e.ExtentHeightChange != 0 || e.ViewportHeightChange != 0)
+                return current;
+            return viewer.ScrollableHeight - viewer.VerticalOffset <= 2;
+        }
+
+        private void FollowOriginal()
+        {
+            OriginalScrollViewer.ScrollToEnd();
+            originalAutoFollow = true;
+        }
+
+        private void FollowTranslated()
+        {
+            TranslatedScrollViewer.ScrollToEnd();
+            translatedAutoFollow = true;
         }
     }
 }
