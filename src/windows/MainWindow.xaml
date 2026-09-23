@@ -6,7 +6,7 @@
     xmlns:local="clr-namespace:LiveCaptionsTranslator"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
-    Title="OneBoard Caption Translate"
+    Title="OneBoard Capture Translate"
     Width="750"
     Height="170"
     MinWidth="750"
@@ -34,7 +34,7 @@
                 Height="27"
                 ShowMaximize="False">
                 <ui:TitleBar.Header>
-                    <ui:TextBlock Padding="15,0,0,0" VerticalAlignment="Center">OneBoard Caption Translate</ui:TextBlock>
+                    <ui:TextBlock Padding="15,0,0,0" VerticalAlignment="Center">OneBoard Capture Translate</ui:TextBlock>
                 </ui:TitleBar.Header>
                 <ui:TitleBar.TrailingContent>
                     <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
@@ -87,7 +87,7 @@
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem
                         Margin="0,6,0,3"
-                        Content="Caption"
+                        Content="Capture"
                         FontFamily="Bahnschrift"
                         Icon="{ui:SymbolIcon Home24}"
                         NavigationCacheMode="Enabled"

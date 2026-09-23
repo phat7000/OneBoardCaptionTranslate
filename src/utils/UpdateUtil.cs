@@ -20,7 +20,7 @@ namespace LiveCaptionsTranslator.utils
             {
                 Timeout = TimeSpan.FromSeconds(3)
             };
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("OneBoardCaptionTranslate");
+            client.DefaultRequestHeaders.UserAgent.ParseAdd("OneBoardCaptureTranslate");
             var response = await client.GetStringAsync(apiUrl);
             using var doc = JsonDocument.Parse(response);
             var latestVersionRaw = doc.RootElement.GetProperty("tag_name").GetString();

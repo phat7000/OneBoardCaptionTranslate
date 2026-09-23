@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This file covers the NuGet dependency graph resolved for the OneBoard Caption Translate 1.0.0 Windows x64 self-contained build. Package versions and license identifiers were verified against the restored `.nuspec` metadata and bundled license/notice files.
+This file covers the NuGet dependencies used by the OneBoard Capture Translate 1.1.0 source tree. It must be regenerated and verified against the exact restored graph before a public release package is created.
 
 The OneBoard application itself is distributed under the Apache License 2.0 in [LICENSE](LICENSE). Upstream origin and modification information is in [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md).
 
@@ -18,6 +18,10 @@ The OneBoard application itself is distributed under the Apache License 2.0 in [
 | SQLitePCLRaw.provider.e_sqlite3 | 2.1.10 | Apache-2.0. Copyright 2014-2024 SourceGear, LLC. |
 | System.Text.Json | 8.0.5 | MIT plus bundled .NET third-party notices. © Microsoft Corporation; .NET Foundation and contributors. |
 | System.Net.Http | 4.3.4 | Microsoft .NET Library terms plus bundled third-party notices. © Microsoft Corporation. |
+| System.Security.Cryptography.ProtectedData | 8.0.0 | MIT. © Microsoft Corporation. |
+| Microsoft.CognitiveServices.Speech | 1.51.2 | Microsoft license bundled as `LICENSE.txt`. © Microsoft Corporation. |
+| Google.Cloud.Speech.V1 | 3.9.0 | Apache-2.0. Copyright 2025 Google LLC. |
+| NAudio | 2.2.1 | MIT license bundled as `license.txt`. © Mark Heath 2023. |
 | WPF-UI | 4.0.1 | MIT plus bundled `ThirdPartyNotices.txt`. Copyright © 2021-2025 Leszek Pomianowski and WPF UI Contributors. |
 | WPF-UI.Abstractions | 4.0.1 | MIT plus bundled `ThirdPartyNotices.txt`. Copyright © 2021-2025 Leszek Pomianowski and WPF UI Contributors. |
 
@@ -74,8 +78,8 @@ The MIT permission and warranty text above applies to items 1 through 4, with th
 
 > You may use the Segoe and icon fonts, or glyphs included in this file ("Software") solely to design, develop and test your programs that run on a Microsoft Platform, a Microsoft Platform includes but is not limited to any hardware or software product or service branded by trademark, trade dress, copyright or some other recognized means, as a product or service of Microsoft. This license does not grant you the right to distribute or sublicense all or part of the Software to any third party. By using the Software, you agree to these terms. If you do not agree to these terms, do not use the Software.
 
-OneBoard Caption Translate is a Windows-only application. The package does not separately redistribute a standalone Segoe Fluent Icons font file; WPF-UI resources are embedded in the application payload.
+OneBoard Capture Translate is a Windows-only application. The package does not separately redistribute a standalone Segoe Fluent Icons font file; WPF-UI resources are embedded in the application payload.
 
 ## Verification status
 
-The package inventory, versions, license identifiers, and bundled WPF-UI notice contents were checked against the exact locally restored graph used for the final win-x64 publish. No license text was invented. This notice is provided for compliance information and is not legal advice.
+The listed direct-package versions and license identifiers were checked against locally restored package metadata. A complete transitive inventory and bundled-license review remains required before release. This notice is provided for compliance information and is not legal advice.

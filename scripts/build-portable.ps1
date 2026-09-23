@@ -7,17 +7,17 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$productName = 'OneBoard Caption Translate'
-$artifactBaseName = "OneBoardCaptionTranslate-$Version-win-x64"
+$productName = 'OneBoard Capture Translate'
+$artifactBaseName = "OneBoardCaptureTranslate-$Version-win-x64"
 $repositoryRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
 $releaseRoot = Join-Path $repositoryRoot 'release'
 $stagingDirectory = Join-Path $releaseRoot $artifactBaseName
 $publishDirectory = Join-Path $releaseRoot '.portable-publish-win-x64'
 $zipPath = Join-Path $releaseRoot "$artifactBaseName.zip"
-$hashPath = Join-Path $releaseRoot "OneBoardCaptionTranslate-$Version-SHA256.txt"
-$manifestPath = Join-Path $releaseRoot "OneBoardCaptionTranslate-$Version-MANIFEST.txt"
+$hashPath = Join-Path $releaseRoot "OneBoardCaptureTranslate-$Version-SHA256.txt"
+$manifestPath = Join-Path $releaseRoot "OneBoardCaptureTranslate-$Version-MANIFEST.txt"
 $projectPath = Join-Path $repositoryRoot 'LiveCaptionsTranslator.csproj'
-$executableName = 'OneBoardCaptionTranslate.exe'
+$executableName = 'OneBoardCaptureTranslate.exe'
 $executablePath = Join-Path $stagingDirectory $executableName
 
 function Assert-ReleaseChildPath {
@@ -157,7 +157,7 @@ if ($versionInfo.ProductName -ne $productName -or $versionInfo.CompanyName -ne '
 if ($versionInfo.Comments -ne 'Lightweight real-time translation for Windows.') {
     throw "Executable description metadata validation failed: $($versionInfo.Comments)"
 }
-if ($versionInfo.FileVersion -ne '1.0.0.0' -or $versionInfo.ProductVersion -ne $Version) {
+if ($versionInfo.FileVersion -ne '1.1.0.0' -or $versionInfo.ProductVersion -ne $Version) {
     throw "Executable version metadata validation failed. File=$($versionInfo.FileVersion), Product=$($versionInfo.ProductVersion)"
 }
 

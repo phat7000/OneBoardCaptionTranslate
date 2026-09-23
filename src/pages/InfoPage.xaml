@@ -11,16 +11,16 @@
     mc:Ignorable="d">
     <Grid Margin="10">
         <StackPanel>
-            <TextBlock FontSize="20" FontWeight="SemiBold" Text="OneBoard Caption Translate" />
+            <TextBlock FontSize="20" FontWeight="SemiBold" Text="OneBoard Capture Translate" />
             <TextBlock Margin="0,3,0,0" Text="Lightweight real-time translation for Windows." TextWrapping="Wrap" />
             <TextBlock Margin="0,6,0,0" TextWrapping="Wrap">
-                <Run Text="OneBoard Caption Translate is built on Windows Live Captions." />
+                <Run Text="OneBoard Capture Translate supports Windows Live Captions and optional cloud speech providers." />
             </TextBlock>
             <Separator Margin="0,5,0,5" />
             <TextBlock Margin="0,0,0,3">
                 <Run FontWeight="SemiBold" Text="Product website:" />
-                <Hyperlink NavigateUri="https://oneboard.io.vn/oneboard-caption-translate/" RequestNavigate="Hyperlink_RequestNavigate">
-                    <Run Text="https://oneboard.io.vn/oneboard-caption-translate/" />
+                <Hyperlink NavigateUri="https://oneboard.io.vn/" RequestNavigate="Hyperlink_RequestNavigate">
+                    <Run Text="https://oneboard.io.vn/" />
                 </Hyperlink>
             </TextBlock>
             <TextBlock Margin="0,0,0,3">

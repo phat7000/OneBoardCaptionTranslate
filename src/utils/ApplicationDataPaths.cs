@@ -11,6 +11,11 @@ namespace LiveCaptionsTranslator.utils
         public static string ApplicationDataDirectory { get; } = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
             "OneBoard",
+            "OneBoard Capture Translate");
+
+        private static string LegacyApplicationDataDirectory { get; } = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "OneBoard",
             "OneBoard Caption Translate");
 
         public static string SettingsFile { get; } =
@@ -41,6 +46,7 @@ namespace LiveCaptionsTranslator.utils
 
             string[] legacyDirectories =
             {
+                LegacyApplicationDataDirectory,
                 AppContext.BaseDirectory,
                 Directory.GetCurrentDirectory()
             };

@@ -41,13 +41,13 @@
                 HorizontalAlignment="Left"
                 FontSize="24"
                 FontWeight="Bold"
-                Text="Welcome to OneBoard Caption Translate!"
+                Text="Welcome to OneBoard Capture Translate!"
                 TextAlignment="Left" />
             <ui:TextBlock
                 Margin="20,10,20,10"
                 TextAlignment="Left"
                 TextWrapping="Wrap">
-                <Run Text="OneBoard Caption Translate is a lightweight real-time translation application for Windows built on Windows Live Captions." />
+                <Run Text="OneBoard Capture Translate is a lightweight real-time speech capture and translation application for Windows." />
                 <Run Text="Before your first running, you need to configure it according to the following steps:&#x0A;" />
                 <Run Text="&#x0A;1. Open Windows LiveCaptions and follow the guide to download the necessary files for on-device speech recognition and language packs." />
                 <Run Text="&#x0A;2. Click the" />
@@ -56,12 +56,12 @@
                 <Run FontWeight="Bold" Text="&quot;Position &gt; Overlaid on screen&quot;" />
                 <Run Text=".&#x0A;3. Click the" />
                 <Run FontWeight="Bold" Text="&quot;Hide&quot;" />
-                <Run Text="button located in the setting page of OneBoard Caption Translate to hide Windows LiveCaptions.&#x0A;" />
+                <Run Text="button located in the settings page of OneBoard Capture Translate to hide Windows Live Captions.&#x0A;" />
                 <Run Text="&#x0A;The program has automatically navigated to the setting page and opened Windows LiveCaptions." />
                 <Run Text="After completing the configuration, you can switch back to the main page and enjoy real-time audio translation.&#x0A;" />
                 <Run Text="&#x0A;For product information and help, visit: " />
-                <Hyperlink NavigateUri="https://oneboard.io.vn/oneboard-caption-translate/" RequestNavigate="Hyperlink_RequestNavigate">
-                    https://oneboard.io.vn/oneboard-caption-translate/
+                <Hyperlink NavigateUri="https://oneboard.io.vn/" RequestNavigate="Hyperlink_RequestNavigate">
+                    https://oneboard.io.vn/
                 </Hyperlink>
                 <Run FontWeight="Bold" Text="&#x0A;&#x0A;Tip:" />
                 <Run Text="To change the" />
