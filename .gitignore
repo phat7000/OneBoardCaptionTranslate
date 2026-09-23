@@ -364,10 +364,17 @@ FodyWeavers.xsd
 
 .idea/
 
-# OneBoard Caption Translate runtime user data
+# OneBoard Capture Translate runtime user data and credentials
 setting.json
 setting.json.bak
 translation_history.db
 translation_history.db-journal
 translation_history.db-shm
 translation_history.db-wal
+.env
+.env.*
+secrets.json
+credentials.json
+**/credentials.json
+**/*service-account*.json
+**/gcp-credentials*.json

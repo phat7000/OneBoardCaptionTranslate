@@ -2,6 +2,8 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
+using LiveCaptionsTranslator.utils;
+
 namespace LiveCaptionsTranslator.models
 {
     public class TranslateAPIConfig : INotifyPropertyChanged
@@ -476,6 +478,104 @@ namespace LiveCaptionsTranslator.models
         public class Response
         {
             public string translatedText { get; set; }
+        }
+    }
+
+    public class MicrosoftTranslatorConfig : TranslateAPIConfig
+    {
+        private string apiKey = string.Empty;
+        private string region = string.Empty;
+        private string endpoint = "https://api.cognitive.microsofttranslator.com";
+
+        [JsonIgnore]
+        public string ApiKey
+        {
+            get => apiKey;
+            set { apiKey = value; OnPropertyChanged(); }
+        }
+
+        [JsonInclude, JsonPropertyName("ApiKey")]
+        public string ProtectedApiKey
+        {
+            get => SecretProtector.Protect(apiKey);
+            private set => apiKey = SecretProtector.Unprotect(value);
+        }
+
+        public string Region
+        {
+            get => region;
+            set { region = value; OnPropertyChanged(); }
+        }
+
+        public string Endpoint
+        {
+            get => endpoint;
+            set { endpoint = value; OnPropertyChanged(); }
+        }
+    }
+
+    /// <summary>Google Cloud Translation - Basic (v2), authenticated with an API key.</summary>
+    public class GoogleCloudTranslationConfig : TranslateAPIConfig
+    {
+        private string apiKey = string.Empty;
+
+        [JsonIgnore]
+        public string ApiKey
+        {
+            get => apiKey;
+            set { apiKey = value; OnPropertyChanged(); }
+        }
+
+        [JsonInclude, JsonPropertyName("ApiKey")]
+        public string ProtectedApiKey
+        {
+            get => SecretProtector.Protect(apiKey);
+            private set => apiKey = SecretProtector.Unprotect(value);
+        }
+    }
+
+    public class TranslatePlusConfig : TranslateAPIConfig
+    {
+        private string apiKey = string.Empty;
+
+        [JsonIgnore]
+        public string ApiKey
+        {
+            get => apiKey;
+            set { apiKey = value; OnPropertyChanged(); }
+        }
+
+        [JsonInclude, JsonPropertyName("ApiKey")]
+        public string ProtectedApiKey
+        {
+            get => SecretProtector.Protect(apiKey);
+            private set => apiKey = SecretProtector.Unprotect(value);
+        }
+    }
+
+    public class LangblyConfig : TranslateAPIConfig
+    {
+        private string apiKey = string.Empty;
+        private string endpoint = "https://api.langbly.com";
+
+        [JsonIgnore]
+        public string ApiKey
+        {
+            get => apiKey;
+            set { apiKey = value; OnPropertyChanged(); }
+        }
+
+        [JsonInclude, JsonPropertyName("ApiKey")]
+        public string ProtectedApiKey
+        {
+            get => SecretProtector.Protect(apiKey);
+            private set => apiKey = SecretProtector.Unprotect(value);
+        }
+
+        public string Endpoint
+        {
+            get => endpoint;
+            set { endpoint = value; OnPropertyChanged(); }
         }
     }
 }

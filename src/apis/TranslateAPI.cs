@@ -6,6 +6,8 @@ using System.Text.Json.Serialization;
 using System.Security.Cryptography;
 
 using LiveCaptionsTranslator.models;
+using LiveCaptionsTranslator.services;
+using LiveCaptionsTranslator.translation;
 using LiveCaptionsTranslator.utils;
 
 namespace LiveCaptionsTranslator.apis
@@ -29,6 +31,10 @@ namespace LiveCaptionsTranslator.apis
             { "MTranServer", MTranServer },
             { "Baidu", Baidu },
             { "LibreTranslate", LibreTranslate },
+            { "MicrosoftTranslator", TranslationProviderRegistry.TranslateAsync },
+            { "GoogleCloudTranslation", TranslationProviderRegistry.TranslateAsync },
+            { "TranslatePlus", TranslationProviderRegistry.TranslateAsync },
+            { "Langbly", TranslationProviderRegistry.TranslateAsync },
         };
         public static readonly List<string> LLM_BASED_APIS = new()
         {
@@ -40,7 +46,7 @@ namespace LiveCaptionsTranslator.apis
         };
 
         public static Func<string, CancellationToken, Task<string>> TranslateFunction =>
-            TRANSLATE_FUNCTIONS[Translator.Setting.ApiName];
+            TranslationProviderRegistry.TranslateAsync;
         public static bool IsLLMBased => LLM_BASED_APIS.Contains(Translator.Setting.ApiName);
         public static string Prompt => Translator.Setting.Prompt;
 
@@ -53,8 +59,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> OpenAI(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["OpenAI"] as OpenAIConfig;
-            string language = OpenAIConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "OpenAI");
 
             var messages = new List<BaseLLMConfig.Message>
             {
@@ -131,8 +136,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> Ollama(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["Ollama"] as OllamaConfig;
-            string language = OllamaConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "Ollama");
             string apiUrl = TextUtil.NormalizeUrl(config.ApiUrl + "/api/chat");
 
             var messages = new List<BaseLLMConfig.Message>
@@ -194,8 +198,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> LMStudio(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["LMStudio"] as LMStudioConfig;
-            string language = LMStudioConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "LMStudio");
             string apiUrl = TextUtil.NormalizeUrl(config.ApiUrl) + "/chat";
 
             string systemPrompt = string.Format(Prompt, language);
@@ -280,8 +283,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> OpenRouter(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["OpenRouter"] as OpenRouterConfig;
-            string language = OpenRouterConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "OpenRouter");
             string apiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
             var messages = new List<BaseLLMConfig.Message>
@@ -346,7 +348,7 @@ namespace LiveCaptionsTranslator.apis
 
         public static async Task<string> Google(string text, CancellationToken token = default)
         {
-            var language = Translator.Setting?.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting?.TargetLanguage, "Google");
 
             string encodedText = Uri.EscapeDataString(text);
             var url = $"https://clients5.google.com/translate_a/t?" +
@@ -387,8 +389,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> DeepL(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["DeepL"] as DeepLConfig;
-            string language = DeepLConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "DeepL");
             string apiUrl = TextUtil.NormalizeUrl(config.ApiUrl);
 
             var requestData = new
@@ -440,8 +441,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> Youdao(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["Youdao"] as YoudaoConfig;
-            string language = YoudaoConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "Youdao");
 
             string salt = DateTime.Now.Millisecond.ToString();
             string sign = BitConverter.ToString(
@@ -497,8 +497,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> MTranServer(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["MTranServer"] as MTranServerConfig;
-            string targetLanguage = MTranServerConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string targetLanguage = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "MTranServer");
             string sourceLanguage = config.SourceLanguage;
             string apiUrl = TextUtil.NormalizeUrl(config.ApiUrl);
 
@@ -545,8 +544,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> Baidu(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["Baidu"] as BaiduConfig;
-            string language = BaiduConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string language = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "Baidu");
 
             string salt = DateTime.Now.Millisecond.ToString();
             string sign = BitConverter.ToString(
@@ -602,8 +600,7 @@ namespace LiveCaptionsTranslator.apis
         public static async Task<string> LibreTranslate(string text, CancellationToken token = default)
         {
             var config = Translator.Setting["LibreTranslate"] as LibreTranslateConfig;
-            string targetLanguage = LibreTranslateConfig.SupportedLanguages.TryGetValue(
-                Translator.Setting.TargetLanguage, out var langValue) ? langValue : Translator.Setting.TargetLanguage;
+            string targetLanguage = LanguageCatalog.GetTranslationCode(Translator.Setting.TargetLanguage, "LibreTranslate");
             string apiUrl = TextUtil.NormalizeUrl(config.ApiUrl);
 
             var requestData = new

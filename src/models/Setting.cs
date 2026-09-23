@@ -24,6 +24,9 @@ namespace LiveCaptionsTranslator.models
 
         private string apiName;
         private string targetLanguage;
+        private string speechProviderId;
+        private string speechLanguage;
+        private string speechStatus = "Stopped";
         private string prompt;
         private string? ignoredUpdateVersion;
 
@@ -33,6 +36,9 @@ namespace LiveCaptionsTranslator.models
 
         private Dictionary<string, List<TranslateAPIConfig>> configs;
         private Dictionary<string, int> configIndices;
+
+        private AzureSpeechConfig azureSpeech;
+        private GoogleSpeechConfig googleSpeech;
 
         public int MaxIdleInterval => maxIdleInterval;
         public int MaxSyncInterval
@@ -88,6 +94,34 @@ namespace LiveCaptionsTranslator.models
             {
                 targetLanguage = value;
                 OnPropertyChanged("TargetLanguage");
+            }
+        }
+        public string SpeechProviderId
+        {
+            get => speechProviderId;
+            set
+            {
+                speechProviderId = value;
+                OnPropertyChanged();
+            }
+        }
+        public string SpeechLanguage
+        {
+            get => speechLanguage;
+            set
+            {
+                speechLanguage = value;
+                OnPropertyChanged();
+            }
+        }
+        [JsonIgnore]
+        public string SpeechStatus
+        {
+            get => speechStatus;
+            set
+            {
+                speechStatus = value;
+                OnPropertyChanged();
             }
         }
         public string Prompt
@@ -157,6 +191,26 @@ namespace LiveCaptionsTranslator.models
             }
         }
 
+        public AzureSpeechConfig AzureSpeech
+        {
+            get => azureSpeech;
+            set
+            {
+                azureSpeech = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public GoogleSpeechConfig GoogleSpeech
+        {
+            get => googleSpeech;
+            set
+            {
+                googleSpeech = value;
+                OnPropertyChanged();
+            }
+        }
+
         public TranslateAPIConfig this[string key] =>
             configs.ContainsKey(key) && configIndices.ContainsKey(key)
                 ? configs[key][configIndices[key]]
@@ -166,6 +220,8 @@ namespace LiveCaptionsTranslator.models
         {
             apiName = "Google";
             targetLanguage = "zh-CN";
+            speechProviderId = "WindowsLiveCaptions";
+            speechLanguage = "en-US";
             prompt = "As an professional simultaneous interpreter with specialized knowledge in the all fields, " +
                      "you can provide a fluent and precise oral translation for any sentence, even if the sentence is incomplete. " +
                      "Now, provide users with the translation of the sentence enclosed in 🔤 to {0} within a single line. " +
@@ -176,6 +232,8 @@ namespace LiveCaptionsTranslator.models
 
             mainWindowState = new MainWindowState();
             overlayWindowState = new OverlayWindowState();
+            azureSpeech = new AzureSpeechConfig();
+            googleSpeech = new GoogleSpeechConfig();
 
             double screenWidth = SystemParameters.PrimaryScreenWidth;
             double screenHeight = SystemParameters.PrimaryScreenHeight;
@@ -202,7 +260,11 @@ namespace LiveCaptionsTranslator.models
                 { "Youdao", [new YoudaoConfig()] },
                 { "Baidu", [new BaiduConfig()] },
                 { "MTranServer", [new MTranServerConfig()] },
-                { "LibreTranslate", [new LibreTranslateConfig()] }
+                { "LibreTranslate", [new LibreTranslateConfig()] },
+                { "MicrosoftTranslator", [new MicrosoftTranslatorConfig()] },
+                { "GoogleCloudTranslation", [new GoogleCloudTranslationConfig()] },
+                { "TranslatePlus", [new TranslatePlusConfig()] },
+                { "Langbly", [new LangblyConfig()] }
             };
             configIndices = new Dictionary<string, int>
             {
@@ -215,7 +277,11 @@ namespace LiveCaptionsTranslator.models
                 { "Youdao", 0 },
                 { "Baidu", 0 },
                 { "MTranServer", 0 },
-                { "LibreTranslate", 0 }
+                { "LibreTranslate", 0 },
+                { "MicrosoftTranslator", 0 },
+                { "GoogleCloudTranslation", 0 },
+                { "TranslatePlus", 0 },
+                { "Langbly", 0 }
             };
         }
 
@@ -271,7 +337,12 @@ namespace LiveCaptionsTranslator.models
                     continue;
                 var configType = Type.GetType($"LiveCaptionsTranslator.models.{key}Config");
                 if (configType != null && typeof(TranslateAPIConfig).IsAssignableFrom(configType))
-                    setting.Configs[key] = [(TranslateAPIConfig)Activator.CreateInstance(configType)];
+                {
+                    object? created = Activator.CreateInstance(configType);
+                    setting.Configs[key] = created is TranslateAPIConfig config
+                        ? [config]
+                        : [new TranslateAPIConfig()];
+                }
                 else
                     setting.Configs[key] = [new TranslateAPIConfig()];
             }

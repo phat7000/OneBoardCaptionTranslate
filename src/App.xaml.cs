@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 
+using LiveCaptionsTranslator.speech;
 using LiveCaptionsTranslator.utils;
 
 namespace LiveCaptionsTranslator
@@ -19,17 +20,25 @@ namespace LiveCaptionsTranslator
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
             Translator.Setting?.Save();
 
-            Task.Run(() => Translator.SyncLoop());
             Task.Run(() => Translator.TranslateLoop());
             Task.Run(() => Translator.DisplayLoop());
+            Task.Run(() => SpeechRecognitionService.StartSelectedAsync());
         }
 
-        private static void OnProcessExit(object sender, EventArgs e)
+        private static void OnProcessExit(object? sender, EventArgs e)
         {
-            if (Translator.Window != null)
+            try
             {
-                LiveCaptionsHandler.RestoreLiveCaptions(Translator.Window);
-                LiveCaptionsHandler.KillLiveCaptions(Translator.Window);
+                using CancellationTokenSource timeout = new(TimeSpan.FromSeconds(3));
+                SpeechRecognitionService.StopAsync(timeout.Token).GetAwaiter().GetResult();
+            }
+            catch
+            {
+                if (Translator.Window != null)
+                {
+                    LiveCaptionsHandler.RestoreLiveCaptions(Translator.Window);
+                    LiveCaptionsHandler.KillLiveCaptions(Translator.Window);
+                }
             }
         }
     }

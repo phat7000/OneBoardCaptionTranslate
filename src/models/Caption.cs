@@ -24,11 +24,18 @@ namespace LiveCaptionsTranslator.models
 
         public Queue<TranslationHistoryEntry> Contexts { get; } = new(MAX_CONTEXTS);
 
+        public TranscriptBuffer OriginalTranscript { get; } = new();
+        public TranscriptBuffer TranslatedTranscript { get; } = new();
+        public IEnumerable<TranscriptLine> OriginalTranscriptLines => OriginalTranscript.Lines;
+        public IEnumerable<TranscriptLine> TranslatedTranscriptLines => TranslatedTranscript.Lines;
+        public string LiveOriginalText => OriginalTranscript.CombinedText;
+        public string LiveTranslatedText => TranslatedTranscript.CombinedText;
+
         public IEnumerable<TranslationHistoryEntry> AwareContexts => GetPreviousContexts(Translator.Setting.NumContexts);
         public string AwareContextsCaption => GetPreviousText(Translator.Setting.NumContexts, TextType.Caption);
 
         public IEnumerable<TranslationHistoryEntry> DisplayLogCards =>
-            GetPreviousContexts(Translator.Setting.DisplaySentences).Reverse();
+            GetPreviousContexts(MAX_CONTEXTS).Reverse();
 
         public string DisplayOriginalCaption
         {
@@ -77,11 +84,23 @@ namespace LiveCaptionsTranslator.models
             }
         }
 
-        public string OverlayPreviousTranslation =>
-            GetPreviousText(Translator.Setting.DisplaySentences, TextType.Translation);
+        public string OverlayPreviousTranslation => TranslatedTranscript.FinalText;
 
         private Caption()
         {
+            OriginalTranscript.Changed += (_, _) =>
+            {
+                OnPropertyChanged(nameof(OriginalTranscriptLines));
+                OnPropertyChanged(nameof(LiveOriginalText));
+                OnPropertyChanged(nameof(OverlayOriginalCaption));
+            };
+            TranslatedTranscript.Changed += (_, _) =>
+            {
+                OnPropertyChanged(nameof(TranslatedTranscriptLines));
+                OnPropertyChanged(nameof(LiveTranslatedText));
+                OnPropertyChanged(nameof(OverlayPreviousTranslation));
+                OnPropertyChanged(nameof(OverlayCurrentTranslation));
+            };
         }
 
         public static Caption GetInstance()
@@ -97,12 +116,17 @@ namespace LiveCaptionsTranslator.models
             if (count <= 0 || Contexts.Count == 0)
                 return string.Empty;
 
-            var prev = Contexts
+            List<string> previousTexts = Contexts
                 .Reverse().Take(count).Reverse()
                 .Select(entry => entry == null || string.CompareOrdinal(entry.TranslatedText, "N/A") == 0 ||
                                  entry.TranslatedText.Contains("[ERROR]") || entry.TranslatedText.Contains("[WARNING]") ?
                     "" : (textType == TextType.Caption ? entry.SourceText : entry.TranslatedText))
-                .Aggregate((accu, cur) =>
+                .Where(text => !string.IsNullOrWhiteSpace(text))
+                .ToList();
+            if (previousTexts.Count == 0)
+                return string.Empty;
+
+            string prev = previousTexts.Aggregate((accu, cur) =>
                 {
                     if (!string.IsNullOrEmpty(accu))
                     {
