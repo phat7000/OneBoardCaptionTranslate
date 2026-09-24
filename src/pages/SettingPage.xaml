@@ -11,119 +11,158 @@
 
     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <Grid Margin="15">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Grid.Column="0" Margin="5">
-                <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Speech Provider" />
-                <ComboBox
-                    x:Name="SpeechProviderBox"
-                    Height="31"
-                    DisplayMemberPath="DisplayName"
-                    SelectedValuePath="Id"
-                    SelectionChanged="SpeechProviderBox_SelectionChanged" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="0" Grid.Column="1" Margin="5">
-                <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Speech Language" />
-                <ComboBox
-                    x:Name="SourceLangBox"
-                    Height="31"
-                    DisplayMemberPath="DisplayLabel"
-                    IsEditable="True"
-                    IsTextSearchEnabled="True"
-                    SelectedValuePath="CanonicalCode"
-                    StaysOpenOnEdit="True"
-                    LostFocus="SourceLangBox_LostFocus"
-                    SelectionChanged="SourceLangBox_SelectionChanged" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="0" Grid.Column="2" Margin="5">
-                <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Translation Provider" />
-                <ComboBox
-                    x:Name="TranslateAPIBox"
-                    Height="31"
-                    DisplayMemberPath="DisplayName"
-                    SelectedValuePath="Id"
-                    SelectionChanged="TranslateAPIBox_SelectionChanged" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="0" Grid.Column="3" Margin="5">
-                <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Target Language" />
-                <ComboBox
-                    x:Name="TargetLangBox"
-                    Height="31"
-                    DisplayMemberPath="DisplayLabel"
-                    IsEditable="True"
-                    IsTextSearchEnabled="True"
-                    SelectedValuePath="CanonicalCode"
-                    StaysOpenOnEdit="True"
-                    LostFocus="TargetLangBox_LostFocus"
-                    SelectionChanged="TargetLangBox_SelectionChanged" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="1" Grid.Column="0" Margin="5,8,5,5">
-                <TextBlock Margin="2,0,0,5" Text="Provider Configuration" />
-                <ui:Button Height="31" Click="APISettingButton_click" Content="Open settings" />
-            </StackPanel>
-
-            <StackPanel Grid.Row="1" Grid.Column="1" Margin="5,8,5,5">
-                <TextBlock Margin="2,0,0,5" Text="Windows Live Captions" />
-                <ui:Button x:Name="LiveCaptionsButton" Height="31" Click="LiveCaptionsButton_click">
-                    <TextBlock x:Name="ButtonText" Text="Show" />
-                </ui:Button>
-            </StackPanel>
-
-            <StackPanel Grid.Row="1" Grid.Column="2" Margin="5,8,5,5">
-                <TextBlock Margin="2,0,0,5" Text="Translation cadence" />
-                <Slider
-                    Height="31"
-                    AutoToolTipPlacement="TopLeft"
-                    AutoToolTipPrecision="0"
-                    Maximum="10"
-                    Value="{Binding MaxSyncInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            </StackPanel>
-
-            <Grid Grid.Row="1" Grid.Column="3" Margin="5,8,5,5">
+            <Grid x:Name="TopSettingsGrid" Grid.Row="0" SizeChanged="TopSettingsGrid_SizeChanged">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="1*" />
+                    <ColumnDefinition Width="1.5*" />
+                    <ColumnDefinition Width="1.3*" />
+                    <ColumnDefinition Width="1.5*" />
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,4,0">
-                    <TextBlock Margin="2,0,0,5" Text="Contexts" />
-                    <ui:NumberBox
-                        Height="31"
-                        AcceptsExpression="False"
-                        ClearButtonEnabled="False"
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel x:Name="SpeechProviderPanel" Grid.Row="0" Grid.Column="0" Margin="5">
+                    <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Speech Provider" />
+                    <ComboBox
+                        x:Name="SpeechProviderBox"
+                        Height="32"
+                        MinWidth="180"
+                        DisplayMemberPath="DisplayName"
+                        SelectedValuePath="Id"
+                        SelectionChanged="SpeechProviderBox_SelectionChanged"
+                        ToolTip="{Binding SelectedItem.DisplayName, ElementName=SpeechProviderBox}" />
+                </StackPanel>
+
+                <StackPanel x:Name="AudioSourcePanel" Grid.Row="0" Grid.Column="1" Margin="5">
+                    <TextBlock x:Name="AudioSourceLabel" Margin="2,0,0,5" FontWeight="SemiBold" Text="Audio Source" />
+                    <ComboBox
+                        x:Name="AudioSourceBox"
+                        Height="32"
+                        MinWidth="160"
+                        DisplayMemberPath="DisplayName"
+                        SelectedValuePath="Value"
+                        SelectionChanged="AudioSourceBox_SelectionChanged"
+                        ToolTip="{Binding SelectedItem.DisplayName, ElementName=AudioSourceBox}" />
+                </StackPanel>
+
+                <StackPanel x:Name="SpeechLanguagePanel" Grid.Row="0" Grid.Column="2" Margin="5">
+                    <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Speech Language" />
+                    <ComboBox
+                        x:Name="SourceLangBox"
+                        Height="32"
+                        MinWidth="230"
+                        DisplayMemberPath="DisplayLabel"
+                        IsEditable="True"
+                        IsTextSearchEnabled="True"
+                        SelectedValuePath="CanonicalCode"
+                        StaysOpenOnEdit="True"
+                        LostFocus="SourceLangBox_LostFocus"
+                        SelectionChanged="SourceLangBox_SelectionChanged"
+                        ToolTip="{Binding Text, ElementName=SourceLangBox}" />
+                </StackPanel>
+
+                <StackPanel x:Name="TranslationProviderPanel" Grid.Row="0" Grid.Column="3" Margin="5">
+                    <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Translation Provider" />
+                    <ComboBox
+                        x:Name="TranslateAPIBox"
+                        Height="32"
+                        MinWidth="200"
+                        DisplayMemberPath="DisplayName"
+                        SelectedValuePath="Id"
+                        SelectionChanged="TranslateAPIBox_SelectionChanged"
+                        ToolTip="{Binding SelectedItem.DisplayName, ElementName=TranslateAPIBox}" />
+                </StackPanel>
+
+                <StackPanel x:Name="TargetLanguagePanel" Grid.Row="0" Grid.Column="4" Margin="5">
+                    <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Target Language" />
+                    <ComboBox
+                        x:Name="TargetLangBox"
+                        Height="32"
+                        MinWidth="230"
+                        DisplayMemberPath="DisplayLabel"
+                        IsEditable="True"
+                        IsTextSearchEnabled="True"
+                        SelectedValuePath="CanonicalCode"
+                        StaysOpenOnEdit="True"
+                        LostFocus="TargetLangBox_LostFocus"
+                        SelectionChanged="TargetLangBox_SelectionChanged"
+                        ToolTip="{Binding Text, ElementName=TargetLangBox}" />
+                </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,3,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.15*" />
+                    <ColumnDefinition Width="1.15*" />
+                    <ColumnDefinition Width="1.2*" />
+                    <ColumnDefinition Width="1.5*" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Margin="2,0,0,5" Text="Provider Configuration" />
+                    <ui:Button
+                        x:Name="ProviderSettingsButton"
+                        Height="32"
+                        Click="APISettingButton_click"
+                        Content="Open settings" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Margin="5">
+                    <TextBlock Margin="2,0,0,5" Text="Windows Live Captions" />
+                    <ui:Button x:Name="LiveCaptionsButton" Height="32" Click="LiveCaptionsButton_click">
+                        <TextBlock x:Name="ButtonText" Text="Show" />
+                    </ui:Button>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" Margin="5">
+                    <TextBlock Margin="2,0,0,5" Text="Translation cadence" />
+                    <Slider
+                        Height="32"
+                        AutoToolTipPlacement="TopLeft"
+                        AutoToolTipPrecision="0"
                         Maximum="10"
-                        Minimum="1"
-                        SpinButtonPlacementMode="Inline"
-                        Value="{Binding NumContexts, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        ValueChanged="Contexts_ValueChanged" />
+                        Value="{Binding MaxSyncInterval, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                 </StackPanel>
-                <StackPanel Grid.Column="1" Margin="4,0,0,0">
-                    <TextBlock Margin="2,0,0,5" Text="Context aware" />
-                    <ui:ToggleSwitch
-                        Height="31"
-                        IsChecked="{Binding ContextAware, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        OffContent="Off"
-                        OnContent="On" />
-                </StackPanel>
+
+                <Grid Grid.Column="3" Margin="5">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,4,0">
+                        <TextBlock Margin="2,0,0,5" Text="Contexts" />
+                        <ui:NumberBox
+                            Height="32"
+                            AcceptsExpression="False"
+                            ClearButtonEnabled="False"
+                            Maximum="10"
+                            Minimum="1"
+                            SpinButtonPlacementMode="Inline"
+                            Value="{Binding NumContexts, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            ValueChanged="Contexts_ValueChanged" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="4,0,0,0">
+                        <TextBlock Margin="2,0,0,5" Text="Context aware" />
+                        <ui:ToggleSwitch
+                            Height="32"
+                            IsChecked="{Binding ContextAware, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            OffContent="Off"
+                            OnContent="On" />
+                    </StackPanel>
+                </Grid>
             </Grid>
 
             <Border
                 Grid.Row="2"
-                Grid.Column="0"
-                Grid.ColumnSpan="4"
                 Margin="5,8,5,0"
                 Padding="8"
                 Background="#10000000"
