@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This file covers the NuGet dependencies resolved for the OneBoard Capture Translate 1.1.0 Windows x64 self-contained release build.
+This file covers the NuGet dependencies resolved for the OneBoard Capture Translate 1.1.1 Windows x64 self-contained release build.
 
 The OneBoard application itself is distributed under the Apache License 2.0 in [LICENSE](LICENSE). Upstream origin and modification information is in [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md).
 

@@ -14,10 +14,10 @@
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 		<AssemblyName>OneBoardCaptureTranslate</AssemblyName>
 		<RootNamespace>LiveCaptionsTranslator</RootNamespace>
-		<Version>1.1.0</Version>
-		<AssemblyVersion>1.1.0.0</AssemblyVersion>
-		<FileVersion>1.1.0.0</FileVersion>
-		<InformationalVersion>1.1.0</InformationalVersion>
+		<Version>1.1.1</Version>
+		<AssemblyVersion>1.1.1.0</AssemblyVersion>
+		<FileVersion>1.1.1.0</FileVersion>
+		<InformationalVersion>1.1.1</InformationalVersion>
 
 		<Title>OneBoard Capture Translate</Title>
 		<Product>OneBoard Capture Translate</Product>

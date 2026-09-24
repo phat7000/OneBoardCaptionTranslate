@@ -1,4 +1,34 @@
-# OneBoard Capture Translate 1.1.0
+# OneBoard Capture Translate 1.1.1
+
+This patch release adds desktop/system-audio capture for cloud speech recognition and improves the responsive provider and language controls.
+
+### Audio and speech recognition
+
+- Adds System Audio capture through Windows WASAPI loopback using the current Windows output device.
+- Enables Azure Speech to recognize desktop/system audio.
+- Enables Google Speech to recognize desktop/system audio.
+- Keeps microphone capture supported.
+- Adds manual Audio Source selection independently of the selected speech provider.
+- Normalizes captured audio to a 16 kHz, 16-bit, mono PCM pipeline for Azure Speech and Google Speech.
+- Improves speech status messages to show the active Speech Provider and Audio Source.
+
+### Provider and language settings
+
+- Improves the responsive provider/language settings layout with a five-column wide layout and a 3+2 compact layout.
+- Reduces unnecessary clipping of provider and language values.
+- Adds full-value tooltips for provider, audio-source, and language selections.
+
+### Compatibility and release information
+
+- Preserves Windows Live Captions and all existing translation providers.
+- Keeps settings and history under `%LOCALAPPDATA%\OneBoard\OneBoard Capture Translate\`.
+- Automatic updates remain disabled.
+- Windows binaries are unsigned and may trigger Windows SmartScreen warnings.
+- Cloud-provider calls require user-supplied credentials and were not exercised as part of the credential-free automated release build.
+
+---
+
+## OneBoard Capture Translate 1.1.0
 
 This release expands cloud translation and speech recognition, broadens language support, and makes live transcript rendering adapt to the available pane height.
 

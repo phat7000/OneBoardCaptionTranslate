@@ -162,7 +162,8 @@ if ($versionInfo.ProductName -ne $productName -or $versionInfo.CompanyName -ne '
 if ($versionInfo.Comments -ne 'Lightweight real-time translation for Windows.') {
     throw "Executable description metadata validation failed: $($versionInfo.Comments)"
 }
-if ($versionInfo.FileVersion -ne '1.1.0.0' -or $versionInfo.ProductVersion -ne $Version) {
+$expectedFileVersion = "$Version.0"
+if ($versionInfo.FileVersion -ne $expectedFileVersion -or $versionInfo.ProductVersion -ne $Version) {
     throw "Executable version metadata validation failed. File=$($versionInfo.FileVersion), Product=$($versionInfo.ProductVersion)"
 }
 
