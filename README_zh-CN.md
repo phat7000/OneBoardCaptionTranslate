@@ -25,6 +25,7 @@ OneBoard Capture Translate 将手动选择的语音识别服务连接到独立�
 ## 功能
 
 - 支持 Windows 实时字幕、Azure Speech 和 Google Cloud Speech-to-Text，并由用户明确选择。
+- 支持系统音频、麦克风和所选外部音频输入，包括 USB 调音台及标准 Windows 录音端点。
 - 保留现有翻译服务，并新增 Microsoft Translator、Google Cloud Translation Basic v2、TranslatePlus 和 Langbly。
 - 包含 87 种语言的规范目录，以及按服务映射的翻译代码和 BCP-47 语音区域代码。
 - 原文和译文区域自适应高度、底部对齐，并稳定更新临时识别结果。
@@ -43,7 +44,7 @@ OneBoard Capture Translate 将手动选择的语音识别服务连接到独立�
 
 - Windows 11 22H2 或更高版本。
 - 选择 Windows 实时字幕时，需要系统支持并安装相应语音包。
-- 选择 Azure Speech 或 Google Speech 时，需要麦克风和相应服务凭据。
+- 选择 Azure Speech 或 Google Speech 时，需要麦克风、系统输出或 Windows 录音端点，以及相应服务凭据。
 - CI 构建支持 Windows x64 和 ARM64。
 
 便携版为自包含版本，无需另行安装 .NET。

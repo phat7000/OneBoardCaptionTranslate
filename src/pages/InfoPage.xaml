@@ -48,7 +48,7 @@
             </TextBlock>
             <TextBlock Margin="0,0,0,3">
                 <Run FontWeight="SemiBold" Text="Version:" />
-                <Run x:Name="Version" Text="1.1.1.1" />
+                <Run x:Name="Version" Text="1.2.0" />
             </TextBlock>
             <TextBlock FontStyle="Italic" Text="This modified product is not an official upstream release and does not imply upstream endorsement." TextWrapping="Wrap" />
         </StackPanel>

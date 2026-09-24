@@ -1,10 +1,10 @@
 #define MyAppName "OneBoard Capture Translate"
-#define MyAppVersion "1.1.1"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "OneBoard"
 #define MyAppURL "https://oneboard.io.vn/"
 #define MyAppExeName "OneBoardCaptureTranslate.exe"
-#define MyArtifactName "OneBoardCaptureTranslate-Setup-1.1.1-win-x64"
-#define MyPayloadDir "..\release\OneBoardCaptureTranslate-1.1.1-win-x64"
+#define MyArtifactName "OneBoardCaptureTranslate-Setup-1.2.0-win-x64"
+#define MyPayloadDir "..\release\OneBoardCaptureTranslate-1.2.0-win-x64"
 
 [Setup]
 AppId={{B716520A-EAED-43AD-BCFF-2BD74429FB9D}
@@ -30,11 +30,11 @@ LicenseFile=..\LICENSE
 Compression=lzma2/max
 SolidCompression=yes
 WizardStyle=modern
-VersionInfoVersion=1.1.1.0
+VersionInfoVersion=1.2.0.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription={#MyAppName} Installer
 VersionInfoProductName={#MyAppName}
-VersionInfoProductVersion=1.1.1.0
+VersionInfoProductVersion=1.2.0.0
 CreateUninstallRegKey=yes
 Uninstallable=yes
 

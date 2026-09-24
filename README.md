@@ -27,6 +27,7 @@ Speech provider -> OneBoard Capture Translate -> translation provider -> adaptiv
 ## Features
 
 - Windows Live Captions, Azure Speech, and Google Cloud Speech-to-Text with explicit provider selection.
+- System Audio, Microphone, and selected External Audio Input capture, including USB mixers and standard Windows recording endpoints.
 - Existing translation providers plus Microsoft Translator, official Google Cloud Translation Basic v2, TranslatePlus, and Langbly.
 - 87-language canonical catalog with provider-aware translation codes and BCP-47 speech locales.
 - Adaptive, bottom-anchored original and translation panes with stable partial-result updates.
@@ -45,7 +46,7 @@ Screenshots will be added after product-owner QA. Older screenshots that predate
 
 - Windows 11 22H2 or later.
 - Windows Live Captions support and the required speech pack when that provider is selected.
-- A microphone and provider credentials when Azure Speech or Google Speech is selected.
+- A microphone, system output, or Windows recording endpoint and provider credentials when Azure Speech or Google Speech is selected.
 - Windows x64 or ARM64 for CI-produced builds.
 
 The portable package is self-contained. No separate .NET installation is required.

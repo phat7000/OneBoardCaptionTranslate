@@ -1,4 +1,39 @@
-# OneBoard Capture Translate 1.1.1
+# OneBoard Capture Translate 1.2.0
+
+This minor release adds professional conference and seminar audio-device input while preserving all existing capture and provider workflows.
+
+### New
+
+- Adds **External Audio Input** as a third audio source alongside System Audio and Microphone.
+- Adds a Windows recording-device selector for USB mixers, USB audio interfaces, virtual audio endpoints, and other standard capture devices.
+- Persists both the stable Windows endpoint ID and friendly display name, so devices with identical names remain distinguishable internally.
+- Adds an in-app **Refresh** action so newly connected recording devices appear without restarting OneBoard.
+- Supports conference workflows such as mixer AUX/REC/LINE output through a USB interface, or direct USB audio from a mixer.
+
+### Audio behavior and reliability
+
+- Reuses the existing NAudio pipeline and feeds the same normalized PCM stream to Azure Speech and Google Speech.
+- Normalizes external input and System Audio to 16 kHz, 16-bit, mono PCM, including safe multi-channel downmixing and resampling from common device formats.
+- Shows the selected external device name in listening status messages.
+- Fails clearly when a saved device is missing or disconnected; it never silently switches to Microphone or System Audio.
+- Serializes speech-provider and audio-source restarts so previous capture and recognition sessions are disposed before replacements start.
+
+### Existing capabilities retained
+
+- System Audio via WASAPI loopback.
+- Microphone capture.
+- Windows Live Captions, Azure Speech, and Google Speech.
+- Existing translation providers, settings, API keys, history, and language selections.
+
+### Release information
+
+- External inputs are standard Windows recording endpoints; no specific mixer or USB-interface model is certified by this release.
+- Windows binaries are unsigned and may trigger Windows SmartScreen warnings.
+- Cloud recognition still requires user-supplied credentials.
+
+---
+
+## OneBoard Capture Translate 1.1.1
 
 This patch release adds desktop/system-audio capture for cloud speech recognition and improves the responsive provider and language controls.
 
