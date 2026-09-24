@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-This file covers the NuGet dependencies used by the OneBoard Capture Translate 1.1.0 source tree. It must be regenerated and verified against the exact restored graph before a public release package is created.
+This file covers the NuGet dependencies resolved for the OneBoard Capture Translate 1.1.0 Windows x64 self-contained release build.
 
 The OneBoard application itself is distributed under the Apache License 2.0 in [LICENSE](LICENSE). Upstream origin and modification information is in [UPSTREAM_ATTRIBUTION.md](UPSTREAM_ATTRIBUTION.md).
 
@@ -25,6 +25,8 @@ The OneBoard application itself is distributed under the Apache License 2.0 in [
 | WPF-UI | 4.0.1 | MIT plus bundled `ThirdPartyNotices.txt`. Copyright © 2021-2025 Leszek Pomianowski and WPF UI Contributors. |
 | WPF-UI.Abstractions | 4.0.1 | MIT plus bundled `ThirdPartyNotices.txt`. Copyright © 2021-2025 Leszek Pomianowski and WPF UI Contributors. |
 
+The Google client dependency graph also includes `Google.Api.CommonProtos` 2.17.0, `Google.Api.Gax` 4.12.1, and `Google.Api.Gax.Grpc` 4.12.1 under BSD-3-Clause, plus `Google.Protobuf` 3.31.1 under BSD-3-Clause. The remaining Google API, gRPC, and long-running-operation packages in the resolved graph use Apache-2.0. Azure.Core, the Microsoft extensions, NAudio subpackages, Newtonsoft.Json, and current `System.*` support packages use MIT where declared by their package metadata.
+
 The resolved graph also contains the legacy `System.*` and platform runtime packages pulled by System.Net.Http 4.3.4, including Microsoft.NETCore.Platforms/Targets and native cryptography/HTTP runtime packages. Those components are covered by the Microsoft .NET Library terms and the notices supplied with that package. The self-contained .NET 8 runtime is covered by the .NET MIT license and its third-party notices.
 
 ## Apache License 2.0 components
@@ -40,6 +42,10 @@ The following permission notice applies to the MIT-licensed components identifie
 > The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 >
 > THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## BSD-3-Clause components
+
+The Google common-proto, GAX, and Protobuf components identified above use the BSD 3-Clause license. Their package metadata and bundled license files retain the applicable Google copyright notices and the following conditions: redistributions must retain the copyright notice, conditions, and disclaimer; binary redistributions must reproduce them in accompanying materials; and contributor names may not be used to endorse derived products without prior written permission. The software is provided without warranty and without liability for damages.
 
 ## Microsoft .NET Library terms
 
@@ -82,4 +88,4 @@ OneBoard Capture Translate is a Windows-only application. The package does not s
 
 ## Verification status
 
-The listed direct-package versions and license identifiers were checked against locally restored package metadata. A complete transitive inventory and bundled-license review remains required before release. This notice is provided for compliance information and is not legal advice.
+The complete restored graph contains 124 package identities for the target framework, including runtime-specific compatibility packages. Every resolved package exposes either a license expression, a bundled license file, or the legacy Microsoft package-license URL in its restored `.nuspec`; no package had missing license metadata. Direct versions, transitive versions, license identifiers, and bundled notice files were checked against the exact restored graph used for this release. This notice is provided for compliance information and is not legal advice.

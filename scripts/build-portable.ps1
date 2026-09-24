@@ -84,6 +84,11 @@ try {
         @{ Title = 'System.Net.Http 4.3.4 - ThirdPartyNotices.txt'; Path = 'system.net.http\4.3.4\ThirdPartyNotices.txt' }
         @{ Title = 'WPF-UI 4.0.1 - LICENSE.md'; Path = 'wpf-ui\4.0.1\LICENSE.md' }
         @{ Title = 'WPF-UI 4.0.1 - ThirdPartyNotices.txt'; Path = 'wpf-ui\4.0.1\ThirdPartyNotices.txt' }
+        @{ Title = 'Microsoft.CognitiveServices.Speech 1.51.2 - LICENSE.txt'; Path = 'microsoft.cognitiveservices.speech\1.51.2\LICENSE.txt' }
+        @{ Title = 'NAudio 2.2.1 - license.txt'; Path = 'naudio\2.2.1\license.txt' }
+        @{ Title = 'Google.Cloud.Speech.V1 3.9.0 - LICENSE'; Path = 'google.cloud.speech.v1\3.9.0\LICENSE' }
+        @{ Title = 'Google.Api.CommonProtos 2.17.0 - LICENSE'; Path = 'google.api.commonprotos\2.17.0\LICENSE' }
+        @{ Title = 'Google.Api.Gax 4.12.1 - LICENSE'; Path = 'google.api.gax\4.12.1\LICENSE' }
     )
     $packagedNoticePath = Join-Path $stagingDirectory 'THIRD_PARTY_NOTICES.md'
     foreach ($appendix in $noticeAppendices) {
