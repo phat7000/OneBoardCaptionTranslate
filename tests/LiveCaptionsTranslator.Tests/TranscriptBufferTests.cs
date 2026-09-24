@@ -12,7 +12,7 @@ public class TranscriptBufferTests
 
         buffer.UpdatePartial("hel", now);
         buffer.UpdatePartial("hello", now);
-        await Task.Delay(180);
+        await WaitForAsync(() => buffer.Lines.Count == 1);
 
         Assert.Single(buffer.Lines);
         Assert.Equal("hello", buffer.Lines[0].Text);
@@ -23,5 +23,12 @@ public class TranscriptBufferTests
         Assert.Single(buffer.Lines);
         Assert.Equal("hello world", buffer.Lines[0].Text);
         Assert.True(buffer.Lines[0].IsFinal);
+    }
+
+    private static async Task WaitForAsync(Func<bool> condition)
+    {
+        DateTime deadline = DateTime.UtcNow.AddSeconds(2);
+        while (!condition() && DateTime.UtcNow < deadline)
+            await Task.Delay(20);
     }
 }

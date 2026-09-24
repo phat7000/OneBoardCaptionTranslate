@@ -12,6 +12,8 @@ namespace LiveCaptionsTranslator.speech
     public sealed class GoogleSpeechProvider : ISpeechRecognitionProvider
     {
         private readonly GoogleSpeechConfig configuration;
+        private readonly AudioSourceType audioSourceType;
+        private readonly Func<AudioSourceType, IAudioCaptureSource> audioSourceFactory;
         private IAudioCaptureSource? audioSource;
         private SpeechClient? client;
         private SpeechClient.StreamingRecognizeStream? stream;
@@ -20,8 +22,22 @@ namespace LiveCaptionsTranslator.speech
         private Task? writerTask;
         private Task? readerTask;
         private string languageCode = string.Empty;
+        private int failureHandling;
 
-        public GoogleSpeechProvider(GoogleSpeechConfig configuration) => this.configuration = configuration;
+        public GoogleSpeechProvider(GoogleSpeechConfig configuration)
+            : this(configuration, AudioSourceType.Microphone)
+        {
+        }
+
+        public GoogleSpeechProvider(
+            GoogleSpeechConfig configuration,
+            AudioSourceType audioSourceType,
+            Func<AudioSourceType, IAudioCaptureSource>? audioSourceFactory = null)
+        {
+            this.configuration = configuration;
+            this.audioSourceType = audioSourceType;
+            this.audioSourceFactory = audioSourceFactory ?? AudioCaptureSourceFactory.Create;
+        }
 
         public string Id => "GoogleSpeech";
         public string DisplayName => "Google Speech";
@@ -77,16 +93,45 @@ namespace LiveCaptionsTranslator.speech
                 SingleWriter = false
             });
             sessionCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            audioSource = new WaveInAudioCaptureSource();
+            audioSource = audioSourceFactory(audioSourceType);
             audioSource.AudioAvailable += OnAudioAvailable;
+            audioSource.CaptureFailed += OnAudioCaptureFailed;
+            IsRunning = true;
             writerTask = WriteAudioAsync(sessionCancellation.Token);
             readerTask = ReadResultsAsync(sessionCancellation.Token);
             audioSource.Start();
-            IsRunning = true;
-            StatusChanged?.Invoke(this, new SpeechProviderStatus(false, "Listening with Google Speech."));
+            StatusChanged?.Invoke(this, new SpeechProviderStatus(
+                false, $"Listening to {audioSource.DisplayName} with Google Speech."));
         }
 
         private void OnAudioAvailable(object? sender, AudioChunkEventArgs e) => audioChannel?.Writer.TryWrite(e.Data);
+
+        private void OnAudioCaptureFailed(object? sender, AudioCaptureErrorEventArgs e)
+        {
+            IsRunning = false;
+            audioChannel?.Writer.TryComplete();
+            StatusChanged?.Invoke(this, new SpeechProviderStatus(true, e.Message));
+            QueueFailureCleanup();
+        }
+
+        private void QueueFailureCleanup()
+        {
+            IsRunning = false;
+            if (Interlocked.Exchange(ref failureHandling, 1) == 0)
+                _ = Task.Run(StopAfterCaptureFailureAsync);
+        }
+
+        private async Task StopAfterCaptureFailureAsync()
+        {
+            try
+            {
+                await StopAsync(CancellationToken.None);
+            }
+            catch
+            {
+                // The original capture failure is already visible to the user.
+            }
+        }
 
         private async Task WriteAudioAsync(CancellationToken cancellationToken)
         {
@@ -117,13 +162,22 @@ namespace LiveCaptionsTranslator.speech
                                 DateTimeOffset.UtcNow));
                     }
                 }
+                if (IsRunning)
+                {
+                    StatusChanged?.Invoke(this, new SpeechProviderStatus(false, "Google Speech session stopped."));
+                    QueueFailureCleanup();
+                }
             }
             catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
             {
             }
             catch (Exception ex)
             {
-                StatusChanged?.Invoke(this, new SpeechProviderStatus(true, $"Google Speech stopped: {ex.Message}"));
+                if (IsRunning)
+                {
+                    StatusChanged?.Invoke(this, new SpeechProviderStatus(true, $"Google Speech stopped: {ex.Message}"));
+                    QueueFailureCleanup();
+                }
             }
         }
 
@@ -133,8 +187,9 @@ namespace LiveCaptionsTranslator.speech
             if (audioSource != null)
             {
                 audioSource.AudioAvailable -= OnAudioAvailable;
-                audioSource.Stop();
-                audioSource.Dispose();
+                audioSource.CaptureFailed -= OnAudioCaptureFailed;
+                try { audioSource.Stop(); }
+                finally { audioSource.Dispose(); }
                 audioSource = null;
             }
 
@@ -142,11 +197,11 @@ namespace LiveCaptionsTranslator.speech
             if (writerTask != null)
             {
                 try { await writerTask.WaitAsync(cancellationToken); }
-                catch (OperationCanceledException) { }
+                catch { }
             }
             if (stream != null)
             {
-                try { await stream.WriteCompleteAsync(); }
+                try { await stream.WriteCompleteAsync().WaitAsync(cancellationToken); }
                 catch { }
             }
 
@@ -154,7 +209,7 @@ namespace LiveCaptionsTranslator.speech
             if (readerTask != null)
             {
                 try { await readerTask.WaitAsync(cancellationToken); }
-                catch (OperationCanceledException) { }
+                catch { }
             }
 
             sessionCancellation?.Dispose();
@@ -165,6 +220,7 @@ namespace LiveCaptionsTranslator.speech
             stream?.Dispose();
             stream = null;
             client = null;
+            Interlocked.Exchange(ref failureHandling, 0);
         }
 
         public async ValueTask DisposeAsync()

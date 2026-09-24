@@ -6,6 +6,7 @@ using System.Text.Json.Serialization;
 using System.Windows;
 
 using LiveCaptionsTranslator.apis;
+using LiveCaptionsTranslator.speech;
 using LiveCaptionsTranslator.utils;
 
 namespace LiveCaptionsTranslator.models
@@ -25,6 +26,7 @@ namespace LiveCaptionsTranslator.models
         private string apiName;
         private string targetLanguage;
         private string speechProviderId;
+        private AudioSourceType audioSource;
         private string speechLanguage;
         private string speechStatus = "Stopped";
         private string prompt;
@@ -111,6 +113,15 @@ namespace LiveCaptionsTranslator.models
             set
             {
                 speechLanguage = value;
+                OnPropertyChanged();
+            }
+        }
+        public AudioSourceType AudioSource
+        {
+            get => audioSource;
+            set
+            {
+                audioSource = value;
                 OnPropertyChanged();
             }
         }
@@ -221,6 +232,7 @@ namespace LiveCaptionsTranslator.models
             apiName = "Google";
             targetLanguage = "zh-CN";
             speechProviderId = "WindowsLiveCaptions";
+            audioSource = AudioSourceType.SystemAudio;
             speechLanguage = "en-US";
             prompt = "As an professional simultaneous interpreter with specialized knowledge in the all fields, " +
                      "you can provide a fluent and precise oral translation for any sentence, even if the sentence is incomplete. " +
@@ -324,6 +336,11 @@ namespace LiveCaptionsTranslator.models
             // with settings created by an earlier build by selecting the supported Google provider.
             if (setting.ApiName == "Google2")
                 setting.ApiName = "Google";
+
+            // Older settings files do not contain AudioSource. The constructor default is
+            // intentionally SystemAudio, which is the primary Capture Translate use case.
+            if (!Enum.IsDefined(setting.AudioSource))
+                setting.AudioSource = AudioSourceType.SystemAudio;
 
             // Do not allow the legacy provider's saved configuration to become a UI item.
             // The ApiName check above is retained solely for backward-compatible fallback.

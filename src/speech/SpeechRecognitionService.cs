@@ -103,8 +103,10 @@ namespace LiveCaptionsTranslator.speech
         private static ISpeechRecognitionProvider Create(string providerId) => providerId switch
         {
             "WindowsLiveCaptions" => new WindowsLiveCaptionsProvider(),
-            "AzureSpeech" => new AzureSpeechProvider(Translator.Setting.AzureSpeech),
-            "GoogleSpeech" => new GoogleSpeechProvider(Translator.Setting.GoogleSpeech),
+            "AzureSpeech" => new AzureSpeechProvider(
+                Translator.Setting.AzureSpeech, Translator.Setting.AudioSource),
+            "GoogleSpeech" => new GoogleSpeechProvider(
+                Translator.Setting.GoogleSpeech, Translator.Setting.AudioSource),
             _ => throw new InvalidOperationException($"Unknown speech provider: {providerId}")
         };
 
