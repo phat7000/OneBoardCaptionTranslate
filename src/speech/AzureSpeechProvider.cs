@@ -9,7 +9,9 @@ namespace LiveCaptionsTranslator.speech
     {
         private readonly AzureSpeechConfig configuration;
         private readonly AudioSourceType audioSourceType;
-        private readonly Func<AudioSourceType, IAudioCaptureSource> audioSourceFactory;
+        private readonly string? externalDeviceId;
+        private readonly string? externalDeviceDisplayName;
+        private readonly Func<AudioSourceType, string?, string?, IAudioCaptureSource> audioSourceFactory;
         private IAudioCaptureSource? audioSource;
         private PushAudioInputStream? pushStream;
         private AudioConfig? audioConfig;
@@ -26,10 +28,14 @@ namespace LiveCaptionsTranslator.speech
         public AzureSpeechProvider(
             AzureSpeechConfig configuration,
             AudioSourceType audioSourceType,
-            Func<AudioSourceType, IAudioCaptureSource>? audioSourceFactory = null)
+            string? externalDeviceId = null,
+            string? externalDeviceDisplayName = null,
+            Func<AudioSourceType, string?, string?, IAudioCaptureSource>? audioSourceFactory = null)
         {
             this.configuration = configuration;
             this.audioSourceType = audioSourceType;
+            this.externalDeviceId = externalDeviceId;
+            this.externalDeviceDisplayName = externalDeviceDisplayName;
             this.audioSourceFactory = audioSourceFactory ?? AudioCaptureSourceFactory.Create;
         }
 
@@ -61,7 +67,7 @@ namespace LiveCaptionsTranslator.speech
             SpeechConfig speechConfig = SpeechConfig.FromSubscription(configuration.ApiKey, configuration.Region);
             speechConfig.SpeechRecognitionLanguage = languageCode;
 
-            audioSource = audioSourceFactory(audioSourceType);
+            audioSource = audioSourceFactory(audioSourceType, externalDeviceId, externalDeviceDisplayName);
             AudioStreamFormat format = AudioStreamFormat.GetWaveFormatPCM(
                 (uint)audioSource.SampleRate,
                 (byte)audioSource.BitsPerSample,

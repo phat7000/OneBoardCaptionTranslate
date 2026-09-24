@@ -5,9 +5,7 @@ namespace LiveCaptionsTranslator.speech
 {
     public static class SpeechRecognitionService
     {
-        private static readonly SemaphoreSlim switchLock = new(1, 1);
-        private static ISpeechRecognitionProvider? current;
-        private static CancellationTokenSource? lifetimeCancellation;
+        private static readonly SpeechProviderSession session = new(Create, ProviderDisplayName);
 
         public static IReadOnlyDictionary<string, string> Providers { get; } =
             new Dictionary<string, string>
@@ -17,96 +15,46 @@ namespace LiveCaptionsTranslator.speech
                 ["GoogleSpeech"] = "Google Speech"
             };
 
-        public static string? CurrentProviderId => current?.Id;
+        static SpeechRecognitionService()
+        {
+            session.ResultReceived += OnResultReceived;
+            session.StatusChanged += OnStatusChanged;
+        }
+
+        public static string? CurrentProviderId => session.CurrentProviderId;
 
         public static async Task StartSelectedAsync(CancellationToken cancellationToken = default) =>
             await SwitchAsync(Translator.Setting.SpeechProviderId, cancellationToken);
 
         public static async Task SwitchAsync(string providerId, CancellationToken cancellationToken = default)
         {
-            await switchLock.WaitAsync(cancellationToken);
-            try
-            {
-                if (current?.Id == providerId && current.IsRunning)
-                    return;
-
-                await StopCurrentCoreAsync(cancellationToken);
-                Translator.Setting.SpeechStatus = $"Starting {ProviderDisplayName(providerId)}...";
-
-                current = Create(providerId);
-                current.ResultReceived += OnResultReceived;
-                current.StatusChanged += OnStatusChanged;
-                lifetimeCancellation = new CancellationTokenSource();
-                string locale = LanguageCatalog.GetSpeechLocale(Translator.Setting.SpeechLanguage, providerId);
-
-                SpeechConfigurationValidation validation = await current.ValidateConfigurationAsync(cancellationToken);
-                if (!validation.IsValid)
-                {
-                    Translator.Setting.SpeechStatus = $"[ERROR] {validation.Message}";
-                    await StopCurrentCoreAsync(cancellationToken);
-                    return;
-                }
-
-                await current.StartAsync(locale, lifetimeCancellation.Token);
-            }
-            catch (Exception ex)
-            {
-                Translator.Setting.SpeechStatus = $"[ERROR] {ProviderDisplayName(providerId)}: {ex.Message}";
-                try
-                {
-                    await StopCurrentCoreAsync(CancellationToken.None);
-                }
-                catch { }
-            }
-            finally
-            {
-                switchLock.Release();
-            }
+            string locale = LanguageCatalog.GetSpeechLocale(Translator.Setting.SpeechLanguage, providerId);
+            await session.SwitchAsync(providerId, locale, cancellationToken: cancellationToken);
         }
 
         public static async Task RestartSelectedAsync(CancellationToken cancellationToken = default)
         {
             string providerId = Translator.Setting.SpeechProviderId;
-            await StopAsync(cancellationToken);
-            await SwitchAsync(providerId, cancellationToken);
+            string locale = LanguageCatalog.GetSpeechLocale(Translator.Setting.SpeechLanguage, providerId);
+            await session.SwitchAsync(providerId, locale, forceRestart: true, cancellationToken: cancellationToken);
         }
 
-        public static async Task StopAsync(CancellationToken cancellationToken = default)
-        {
-            await switchLock.WaitAsync(cancellationToken);
-            try
-            {
-                await StopCurrentCoreAsync(cancellationToken);
-                Translator.Setting.SpeechStatus = "Stopped";
-            }
-            finally
-            {
-                switchLock.Release();
-            }
-        }
-
-        private static async Task StopCurrentCoreAsync(CancellationToken cancellationToken)
-        {
-            lifetimeCancellation?.Cancel();
-            if (current != null)
-            {
-                current.ResultReceived -= OnResultReceived;
-                current.StatusChanged -= OnStatusChanged;
-                try { await current.StopAsync(cancellationToken); }
-                finally { await current.DisposeAsync(); }
-            }
-            current = null;
-            lifetimeCancellation?.Dispose();
-            lifetimeCancellation = null;
-        }
+        public static async Task StopAsync(CancellationToken cancellationToken = default) =>
+            await session.StopAsync(cancellationToken);
 
         private static ISpeechRecognitionProvider Create(string providerId) => providerId switch
         {
             "WindowsLiveCaptions" => new WindowsLiveCaptionsProvider(),
             "AzureSpeech" => new AzureSpeechProvider(
-                Translator.Setting.AzureSpeech, Translator.Setting.AudioSource),
+                Translator.Setting.AzureSpeech,
+                Translator.Setting.AudioSource,
+                Translator.Setting.ExternalAudioDeviceId,
+                Translator.Setting.ExternalAudioDeviceDisplayName),
             "GoogleSpeech" => new GoogleSpeechProvider(
-                Translator.Setting.GoogleSpeech, Translator.Setting.AudioSource),
+                Translator.Setting.GoogleSpeech,
+                Translator.Setting.AudioSource,
+                Translator.Setting.ExternalAudioDeviceId,
+                Translator.Setting.ExternalAudioDeviceDisplayName),
             _ => throw new InvalidOperationException($"Unknown speech provider: {providerId}")
         };
 

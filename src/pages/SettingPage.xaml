@@ -20,12 +20,11 @@
             <Grid x:Name="TopSettingsGrid" Grid.Row="0" SizeChanged="TopSettingsGrid_SizeChanged">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1.1*" />
-                    <ColumnDefinition Width="1*" />
-                    <ColumnDefinition Width="1.5*" />
-                    <ColumnDefinition Width="1.3*" />
-                    <ColumnDefinition Width="1.5*" />
+                    <ColumnDefinition Width="1.1*" />
+                    <ColumnDefinition Width="1.4*" />
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
@@ -70,7 +69,39 @@
                         ToolTip="{Binding Text, ElementName=SourceLangBox}" />
                 </StackPanel>
 
-                <StackPanel x:Name="TranslationProviderPanel" Grid.Row="0" Grid.Column="3" Margin="5">
+                <StackPanel
+                    x:Name="ExternalAudioDevicePanel"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Margin="5"
+                    Visibility="Collapsed">
+                    <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Input Device" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ComboBox
+                            x:Name="ExternalAudioDeviceBox"
+                            Grid.Column="0"
+                            Height="32"
+                            MinWidth="220"
+                            DisplayMemberPath="DisplayName"
+                            SelectedValuePath="DeviceId"
+                            SelectionChanged="ExternalAudioDeviceBox_SelectionChanged"
+                            ToolTip="{Binding SelectedItem.DisplayName, ElementName=ExternalAudioDeviceBox}" />
+                        <ui:Button
+                            x:Name="RefreshDevicesButton"
+                            Grid.Column="1"
+                            Height="32"
+                            Margin="6,0,0,0"
+                            Click="RefreshDevicesButton_Click"
+                            Content="Refresh"
+                            ToolTip="Refresh Windows recording devices" />
+                    </Grid>
+                </StackPanel>
+
+                <StackPanel x:Name="TranslationProviderPanel" Grid.Row="1" Grid.Column="1" Margin="5">
                     <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Translation Provider" />
                     <ComboBox
                         x:Name="TranslateAPIBox"
@@ -82,7 +113,7 @@
                         ToolTip="{Binding SelectedItem.DisplayName, ElementName=TranslateAPIBox}" />
                 </StackPanel>
 
-                <StackPanel x:Name="TargetLanguagePanel" Grid.Row="0" Grid.Column="4" Margin="5">
+                <StackPanel x:Name="TargetLanguagePanel" Grid.Row="1" Grid.Column="2" Margin="5">
                     <TextBlock Margin="2,0,0,5" FontWeight="SemiBold" Text="Target Language" />
                     <ComboBox
                         x:Name="TargetLangBox"

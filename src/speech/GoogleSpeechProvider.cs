@@ -13,7 +13,9 @@ namespace LiveCaptionsTranslator.speech
     {
         private readonly GoogleSpeechConfig configuration;
         private readonly AudioSourceType audioSourceType;
-        private readonly Func<AudioSourceType, IAudioCaptureSource> audioSourceFactory;
+        private readonly string? externalDeviceId;
+        private readonly string? externalDeviceDisplayName;
+        private readonly Func<AudioSourceType, string?, string?, IAudioCaptureSource> audioSourceFactory;
         private IAudioCaptureSource? audioSource;
         private SpeechClient? client;
         private SpeechClient.StreamingRecognizeStream? stream;
@@ -32,10 +34,14 @@ namespace LiveCaptionsTranslator.speech
         public GoogleSpeechProvider(
             GoogleSpeechConfig configuration,
             AudioSourceType audioSourceType,
-            Func<AudioSourceType, IAudioCaptureSource>? audioSourceFactory = null)
+            string? externalDeviceId = null,
+            string? externalDeviceDisplayName = null,
+            Func<AudioSourceType, string?, string?, IAudioCaptureSource>? audioSourceFactory = null)
         {
             this.configuration = configuration;
             this.audioSourceType = audioSourceType;
+            this.externalDeviceId = externalDeviceId;
+            this.externalDeviceDisplayName = externalDeviceDisplayName;
             this.audioSourceFactory = audioSourceFactory ?? AudioCaptureSourceFactory.Create;
         }
 
@@ -93,7 +99,7 @@ namespace LiveCaptionsTranslator.speech
                 SingleWriter = false
             });
             sessionCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            audioSource = audioSourceFactory(audioSourceType);
+            audioSource = audioSourceFactory(audioSourceType, externalDeviceId, externalDeviceDisplayName);
             audioSource.AudioAvailable += OnAudioAvailable;
             audioSource.CaptureFailed += OnAudioCaptureFailed;
             IsRunning = true;

@@ -27,6 +27,8 @@ namespace LiveCaptionsTranslator.models
         private string targetLanguage;
         private string speechProviderId;
         private AudioSourceType audioSource;
+        private string externalAudioDeviceId;
+        private string externalAudioDeviceDisplayName;
         private string speechLanguage;
         private string speechStatus = "Stopped";
         private string prompt;
@@ -122,6 +124,24 @@ namespace LiveCaptionsTranslator.models
             set
             {
                 audioSource = value;
+                OnPropertyChanged();
+            }
+        }
+        public string ExternalAudioDeviceId
+        {
+            get => externalAudioDeviceId;
+            set
+            {
+                externalAudioDeviceId = value ?? string.Empty;
+                OnPropertyChanged();
+            }
+        }
+        public string ExternalAudioDeviceDisplayName
+        {
+            get => externalAudioDeviceDisplayName;
+            set
+            {
+                externalAudioDeviceDisplayName = value ?? string.Empty;
                 OnPropertyChanged();
             }
         }
@@ -233,6 +253,8 @@ namespace LiveCaptionsTranslator.models
             targetLanguage = "zh-CN";
             speechProviderId = "WindowsLiveCaptions";
             audioSource = AudioSourceType.SystemAudio;
+            externalAudioDeviceId = string.Empty;
+            externalAudioDeviceDisplayName = string.Empty;
             speechLanguage = "en-US";
             prompt = "As an professional simultaneous interpreter with specialized knowledge in the all fields, " +
                      "you can provide a fluent and precise oral translation for any sentence, even if the sentence is incomplete. " +
@@ -395,7 +417,10 @@ namespace LiveCaptionsTranslator.models
         public void OnPropertyChanged([CallerMemberName] string? propName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
-            Translator.Setting?.Save();
+            // Only the application's active settings instance is auto-saved. This avoids
+            // overwriting user settings while a migration, import, or test instance is loaded.
+            if (ReferenceEquals(Translator.Setting, this))
+                Save();
         }
 
         public static bool IsConfigExist()

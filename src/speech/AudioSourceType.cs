@@ -6,7 +6,8 @@ namespace LiveCaptionsTranslator.speech
     public enum AudioSourceType
     {
         SystemAudio,
-        Microphone
+        Microphone,
+        ExternalAudioInput
     }
 
     public static class AudioSourceTypeExtensions
@@ -15,6 +16,7 @@ namespace LiveCaptionsTranslator.speech
         {
             AudioSourceType.SystemAudio => "System Audio",
             AudioSourceType.Microphone => "Microphone",
+            AudioSourceType.ExternalAudioInput => "External Audio Input",
             _ => sourceType.ToString()
         };
     }

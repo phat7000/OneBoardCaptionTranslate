@@ -3,19 +3,29 @@ using NAudio.Wave;
 
 namespace LiveCaptionsTranslator.speech
 {
-    /// <summary>
-    /// Captures the current default Windows render endpoint through WASAPI loopback and
-    /// normalizes its native mix format to 16 kHz, 16-bit, mono PCM.
-    /// </summary>
-    public sealed class WasapiLoopbackAudioSource : IAudioCaptureSource
+    /// <summary>Captures a selected Windows recording endpoint and emits normalized speech PCM.</summary>
+    public sealed class ExternalAudioInputSource : IAudioCaptureSource
     {
         private readonly object pipelineLock = new();
+        private readonly string? deviceId;
+        private readonly string savedDisplayName;
+        private readonly IExternalAudioDeviceService deviceService;
         private MMDevice? device;
-        private WasapiLoopbackCapture? capture;
+        private WasapiCapture? capture;
         private Pcm16MonoNormalizer? normalizer;
         private bool running;
 
-        public string DisplayName => "System Audio";
+        public ExternalAudioInputSource(
+            string? deviceId,
+            string? displayName,
+            IExternalAudioDeviceService? deviceService = null)
+        {
+            this.deviceId = deviceId;
+            savedDisplayName = string.IsNullOrWhiteSpace(displayName) ? "External Audio Input" : displayName;
+            this.deviceService = deviceService ?? new ExternalAudioDeviceService();
+        }
+
+        public string DisplayName => device?.FriendlyName ?? savedDisplayName;
         public int SampleRate => Pcm16MonoNormalizer.TargetSampleRate;
         public short BitsPerSample => Pcm16MonoNormalizer.TargetBitsPerSample;
         public short Channels => Pcm16MonoNormalizer.TargetChannels;
@@ -31,10 +41,8 @@ namespace LiveCaptionsTranslator.speech
 
                 try
                 {
-                    using MMDeviceEnumerator enumerator = new();
-                    device = enumerator.GetDefaultAudioEndpoint(DataFlow.Render, Role.Multimedia)
-                        ?? throw new InvalidOperationException("Windows has no default audio output device.");
-                    capture = new WasapiLoopbackCapture(device);
+                    device = deviceService.OpenActiveCaptureDevice(deviceId ?? string.Empty);
+                    capture = new WasapiCapture(device);
                     normalizer = new Pcm16MonoNormalizer(capture.WaveFormat);
                     capture.DataAvailable += OnDataAvailable;
                     capture.RecordingStopped += OnRecordingStopped;
@@ -45,8 +53,12 @@ namespace LiveCaptionsTranslator.speech
                 {
                     running = false;
                     ReleaseCapture();
+                    if (ex is InvalidOperationException &&
+                        (ex.Message.Contains("Select an external", StringComparison.Ordinal) ||
+                         ex.Message.Contains("unavailable", StringComparison.OrdinalIgnoreCase)))
+                        throw;
                     throw new InvalidOperationException(
-                        $"System Audio could not start on the default Windows output device: {ex.Message}", ex);
+                        $"External audio input could not start on {savedDisplayName}: {ex.Message}", ex);
                 }
             }
         }
@@ -57,7 +69,6 @@ namespace LiveCaptionsTranslator.speech
             {
                 if (!running || normalizer == null)
                     return;
-
                 try
                 {
                     foreach (byte[] chunk in normalizer.Convert(e.Buffer, e.BytesRecorded))
@@ -66,7 +77,7 @@ namespace LiveCaptionsTranslator.speech
                 catch (Exception ex)
                 {
                     CaptureFailed?.Invoke(this, new AudioCaptureErrorEventArgs(
-                        $"System Audio conversion failed: {ex.Message}", ex));
+                        $"External audio conversion failed for {DisplayName}: {ex.Message}", ex));
                 }
             }
         }
@@ -82,9 +93,9 @@ namespace LiveCaptionsTranslator.speech
 
             if (stoppedUnexpectedly)
             {
-                string detail = e.Exception?.Message ?? "The default output device was disconnected.";
+                string detail = e.Exception?.Message ?? "The endpoint was disconnected or powered off.";
                 CaptureFailed?.Invoke(this, new AudioCaptureErrorEventArgs(
-                    $"System Audio capture stopped: {detail}", e.Exception));
+                    $"External audio device {savedDisplayName} is unavailable: {detail}", e.Exception));
             }
         }
 

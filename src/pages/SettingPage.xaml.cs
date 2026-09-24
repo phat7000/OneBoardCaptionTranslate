@@ -16,9 +16,10 @@ namespace LiveCaptionsTranslator
     public partial class SettingPage : Page
     {
         private static SettingWindow? settingWindow;
+        private readonly IExternalAudioDeviceService externalAudioDeviceService = new ExternalAudioDeviceService();
         private bool initialized;
         private bool isCompactLayout;
-        private const double WideLayoutThreshold = 1100;
+        private const double WideLayoutThreshold = 900;
 
         public SettingPage()
         {
@@ -35,6 +36,7 @@ namespace LiveCaptionsTranslator
                 .Select(value => new AudioSourceChoice(value, value.ToDisplayName()))
                 .ToList();
             AudioSourceBox.SelectedValue = Translator.Setting.AudioSource;
+            RefreshExternalAudioDevices(reportMissing: false);
 
             TranslateAPIBox.ItemsSource = TranslationProviderRegistry.ProviderIds
                 .Select(id => new ProviderChoice(id, TranslationProviderRegistry.GetDisplayName(id)))
@@ -99,7 +101,52 @@ namespace LiveCaptionsTranslator
 
             Translator.Setting.AudioSource = audioSource;
             AudioSourceBox.ToolTip = audioSource.ToDisplayName();
+            UpdateSpeechControls();
             await SpeechRecognitionService.RestartSelectedAsync();
+        }
+
+        private async void ExternalAudioDeviceBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!initialized || ExternalAudioDeviceBox.SelectedItem is not AudioInputDevice selected)
+                return;
+
+            if (string.Equals(Translator.Setting.ExternalAudioDeviceId, selected.DeviceId, StringComparison.Ordinal))
+                return;
+
+            Translator.Setting.ExternalAudioDeviceId = selected.DeviceId;
+            Translator.Setting.ExternalAudioDeviceDisplayName = selected.DisplayName;
+            ExternalAudioDeviceBox.ToolTip = selected.DisplayName;
+
+            if (Translator.Setting.AudioSource == AudioSourceType.ExternalAudioInput &&
+                Translator.Setting.SpeechProviderId != "WindowsLiveCaptions")
+                await SpeechRecognitionService.RestartSelectedAsync();
+        }
+
+        private void RefreshDevicesButton_Click(object sender, RoutedEventArgs e) =>
+            RefreshExternalAudioDevices(reportMissing: true);
+
+        private void RefreshExternalAudioDevices(bool reportMissing)
+        {
+            try
+            {
+                IReadOnlyList<AudioInputDevice> devices = externalAudioDeviceService.GetActiveCaptureDevices();
+                ExternalAudioDeviceBox.ItemsSource = devices;
+                ExternalAudioDeviceBox.SelectedValue = Translator.Setting.ExternalAudioDeviceId;
+
+                bool hasSavedDevice = !string.IsNullOrWhiteSpace(Translator.Setting.ExternalAudioDeviceId);
+                bool savedDeviceAvailable = devices.Any(device =>
+                    string.Equals(device.DeviceId, Translator.Setting.ExternalAudioDeviceId, StringComparison.Ordinal));
+                if (reportMissing && hasSavedDevice && !savedDeviceAvailable)
+                    Translator.Setting.SpeechStatus = "[ERROR] Selected external audio device is unavailable. Select another input device.";
+                else if (reportMissing && devices.Count == 0)
+                    Translator.Setting.SpeechStatus = "[ERROR] No active Windows recording devices were found.";
+            }
+            catch (Exception ex)
+            {
+                ExternalAudioDeviceBox.ItemsSource = Array.Empty<AudioInputDevice>();
+                if (reportMissing)
+                    Translator.Setting.SpeechStatus = $"[ERROR] Unable to enumerate recording devices: {ex.Message}";
+            }
         }
 
         private async void SourceLangBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -206,6 +253,11 @@ namespace LiveCaptionsTranslator
             AudioSourceBox.ToolTip = usesWindowsCaptions
                 ? "Windows Live Captions manages its own audio input."
                 : (AudioSourceBox.SelectedItem as AudioSourceChoice)?.DisplayName;
+            bool usesExternalInput = !usesWindowsCaptions &&
+                Translator.Setting.AudioSource == AudioSourceType.ExternalAudioInput;
+            ExternalAudioDevicePanel.Visibility = usesExternalInput ? Visibility.Visible : Visibility.Collapsed;
+            ExternalAudioDeviceBox.IsEnabled = usesExternalInput;
+            RefreshDevicesButton.IsEnabled = usesExternalInput;
         }
 
         private void UpdateProviderSettingsButton()
@@ -228,31 +280,36 @@ namespace LiveCaptionsTranslator
             if (compact)
             {
                 TopSettingsGrid.ColumnDefinitions[0].Width = new GridLength(1.1, GridUnitType.Star);
-                TopSettingsGrid.ColumnDefinitions[1].Width = new GridLength(1.0, GridUnitType.Star);
-                TopSettingsGrid.ColumnDefinitions[2].Width = new GridLength(1.5, GridUnitType.Star);
-                TopSettingsGrid.ColumnDefinitions[3].Width = new GridLength(0);
-                TopSettingsGrid.ColumnDefinitions[4].Width = new GridLength(0);
+                TopSettingsGrid.ColumnDefinitions[1].Width = new GridLength(1.1, GridUnitType.Star);
+                TopSettingsGrid.ColumnDefinitions[2].Width = new GridLength(0);
 
-                Grid.SetRow(TranslationProviderPanel, 1);
-                Grid.SetColumn(TranslationProviderPanel, 0);
-                Grid.SetColumnSpan(TranslationProviderPanel, 1);
-                Grid.SetRow(TargetLanguagePanel, 1);
-                Grid.SetColumn(TargetLanguagePanel, 1);
-                Grid.SetColumnSpan(TargetLanguagePanel, 2);
+                PositionPanel(SpeechProviderPanel, 0, 0);
+                PositionPanel(AudioSourcePanel, 0, 1);
+                PositionPanel(SpeechLanguagePanel, 1, 0);
+                PositionPanel(ExternalAudioDevicePanel, 1, 1);
+                PositionPanel(TranslationProviderPanel, 2, 0);
+                PositionPanel(TargetLanguagePanel, 2, 1);
             }
             else
             {
-                double[] widths = [1.1, 1.0, 1.5, 1.3, 1.5];
+                double[] widths = [1.1, 1.1, 1.4];
                 for (int index = 0; index < widths.Length; index++)
                     TopSettingsGrid.ColumnDefinitions[index].Width = new GridLength(widths[index], GridUnitType.Star);
 
-                Grid.SetRow(TranslationProviderPanel, 0);
-                Grid.SetColumn(TranslationProviderPanel, 3);
-                Grid.SetColumnSpan(TranslationProviderPanel, 1);
-                Grid.SetRow(TargetLanguagePanel, 0);
-                Grid.SetColumn(TargetLanguagePanel, 4);
-                Grid.SetColumnSpan(TargetLanguagePanel, 1);
+                PositionPanel(SpeechProviderPanel, 0, 0);
+                PositionPanel(AudioSourcePanel, 0, 1);
+                PositionPanel(SpeechLanguagePanel, 0, 2);
+                PositionPanel(ExternalAudioDevicePanel, 1, 0);
+                PositionPanel(TranslationProviderPanel, 1, 1);
+                PositionPanel(TargetLanguagePanel, 1, 2);
             }
+        }
+
+        private static void PositionPanel(UIElement panel, int row, int column)
+        {
+            Grid.SetRow(panel, row);
+            Grid.SetColumn(panel, column);
+            Grid.SetColumnSpan(panel, 1);
         }
 
         private async Task UpdateTranslationLanguageStatusAsync()
